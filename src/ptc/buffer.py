@@ -39,7 +39,7 @@ class DataBuffer(object):
     def get(self, size):
         with self.condition:
             if not self.buffer:
-                self.condition.wait()
+                self.condition.wait(10)
             data = self.buffer[:size]
             self.buffer = self.buffer[size:]
             return data
