@@ -20,6 +20,7 @@ from protocol import PTCProtocol
 
 # ALUMNOS ------------------------
 from constants import ALPHA, BETA
+VERBOSE = True
 # ALUMNOS ------------------------
 
 class Socket(object):
@@ -111,6 +112,11 @@ class Socket(object):
         self.protocol.shutdown(how)
 
     def close(self, mode=NO_WAIT):
+    
+        if VERBOSE:
+            rto = self.protocol.alumnos_get_rto()
+            print "RTO Calculado {} ticks".format(rto);
+    
         if mode not in [WAIT, NO_WAIT, ABORT]:
             raise RuntimeError('%s: invalid argument' % str(mode))
         # Cerrar el socket abrutpamente para evitar eventuales retransmisiones
@@ -119,6 +125,8 @@ class Socket(object):
             self.free()
         else:
             self.protocol.close(mode)
+        
+
         
     def free(self):
         self.protocol.free()

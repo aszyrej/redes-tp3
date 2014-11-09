@@ -66,12 +66,17 @@ class PTCProtocol(object):
         self.initialize_threads()
         self.initialize_timers()
 
+    # ALUMNOS ------------------------    
     def alumnos_get_delay(self):
         return self.delay
         
     def alumnos_change_delay(self, delay):
         self.delay = delay
-        
+
+    def alumnos_get_rto(self):
+        return self.rto_estimator.get_current_rto()      
+    # ALUMNOS ------------------------
+                
     def initialize_threads(self):
         self.packet_sender = PacketSender(self)
         self.packet_receiver = PacketReceiver(self)

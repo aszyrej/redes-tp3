@@ -9,7 +9,6 @@
 #              Segundo cuatrimestre de 2014              #
 ##########################################################
 
-
 try:
     from ptc import Socket
 except:
