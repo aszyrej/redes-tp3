@@ -36,7 +36,6 @@ from timer import RetransmissionTimer
 
 # ALUMNOS ------------------------
 from constants import ALPHA, BETA
-import random
 # ALUMNOS ------------------------
 
 class PTCProtocol(object):
@@ -69,12 +68,18 @@ class PTCProtocol(object):
     # ALUMNOS ------------------------    
     def alumnos_get_delay(self):
         return self.delay
+
+    def alumnos_get_proba_perdida(self):
+        return self.proba_perdida
         
     def alumnos_change_delay(self, delay):
         self.delay = delay
 
     def alumnos_get_rto(self):
-        return self.rto_estimator.get_current_rto()      
+        return self.rto_estimator.get_current_rto()
+
+    def alumnos_get_srtt(self):
+        return self.rto_estimator.get_estimated_rtt()   
     # ALUMNOS ------------------------
                 
     def initialize_threads(self):
@@ -170,11 +175,8 @@ class PTCProtocol(object):
             current_rto = self.rto_estimator.get_current_rto()
             self.retransmission_timer.start(current_rto)
         
-        # ALUMNOS ------------------------
-        if random.random() > self.proba_perdida:
-            
-           self.socket.send(packet)
-        # ALUMNOS ------------------------
+        self.socket.send(packet)
+
         
     def set_destination_on_packet_builder(self, address, port):
         self.packet_builder.set_destination_address(address)

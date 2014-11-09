@@ -99,6 +99,15 @@ class Socket(object):
             raise PTCError('socket not connected')
     
     def send(self, data):
+    
+        # ALUMNOS ------------------------
+        if VERBOSE:
+            rto = self.protocol.alumnos_get_rto()
+            rtt = self.protocol.alumnos_get_srtt()
+            print "RTO Calculado {} ticks".format(rto);
+            print "RTT Estimado  {} ticks".format(rtt);
+        # ALUMNOS ------------------------
+    
         self._check_socket_connected()
         self.protocol.send(data)
  
@@ -112,11 +121,15 @@ class Socket(object):
         self.protocol.shutdown(how)
 
     def close(self, mode=NO_WAIT):
-    
+
+        # ALUMNOS ------------------------
         if VERBOSE:
             rto = self.protocol.alumnos_get_rto()
+            rtt = self.protocol.alumnos_get_srtt()
             print "RTO Calculado {} ticks".format(rto);
-    
+            print "RTT Estimado  {} ticks".format(rtt);
+        # ALUMNOS ------------------------
+     
         if mode not in [WAIT, NO_WAIT, ABORT]:
             raise RuntimeError('%s: invalid argument' % str(mode))
         # Cerrar el socket abrutpamente para evitar eventuales retransmisiones

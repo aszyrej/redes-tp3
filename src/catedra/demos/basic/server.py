@@ -37,5 +37,3 @@ with Socket() as server_sock:
     # Una vez aquí, la conexión queda establecida exitosamente. Podemos enviar
     # y recibir datos arbitrarios.
     received += server_sock.recv(15)
-    server_sock.send(to_send)
-print 'server_sock received: %s' % received

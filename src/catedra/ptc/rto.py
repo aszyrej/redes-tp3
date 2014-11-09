@@ -31,6 +31,10 @@ class RTOEstimator(object):
         self.tracking = False
         self.lock = threading.RLock()
     
+    def get_estimated_rtt(self):
+        with self.lock:
+            return self.srtt   
+    
     def get_current_rto(self):
         with self.lock:
             return self.rto

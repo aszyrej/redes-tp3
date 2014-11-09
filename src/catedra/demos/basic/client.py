@@ -34,9 +34,5 @@ with Socket() as client_sock:
     # Una vez aquí, la conexión queda establecida exitosamente. Podemos enviar
     # y recibir datos arbitrarios.
     client_sock.send(to_send)
-    received += client_sock.recv(10)
     # Cerramos nuestro stream de escritura pero podemos continuar recibiendo
     # datos de la contraparte.
-    client_sock.shutdown(SHUT_WR)
-    received += client_sock.recv(20)
-print 'client_sock received: %s' % received

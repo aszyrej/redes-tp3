@@ -12,9 +12,11 @@
 
 from constants import CLOSED, SYN_RCVD, ESTABLISHED, SYN_SENT,\
                       LISTEN, FIN_WAIT1, FIN_WAIT2, CLOSE_WAIT,\
-                      LAST_ACK, CLOSING
+                      LAST_ACK, CLOSING, CLOCK_TICK
 from packet import SYNFlag, ACKFlag, FINFlag
 
+import time
+import random
 
 class IncomingPacketHandler(object):
     
@@ -35,14 +37,10 @@ class IncomingPacketHandler(object):
     def send_ack(self):
     
         # ALUMNOS ------------------------
-        # Al tick actual le sumo el delay para hasta que tick esperar
-        t0 = self.protocol.get_ticks()
-        tf = t0 + self.protocol.alumnos_get_delay()
-                
-        while self.protocol.get_ticks() < tf:
-            pass
+        delay = self.protocol.alumnos_get_delay() * CLOCK_TICK
+        time.sleep(delay)
         # ALUMNOS ------------------------    
-        
+
         ack_packet = self.build_packet()
         self.socket.send(ack_packet)
 
@@ -129,8 +127,15 @@ class IncomingPacketHandler(object):
         # Esto es para evitar el envío de ACKs para paquetes que sólo
         # reconozcan datos.
         if packet.has_payload():
-            self.send_ack()
-            
+        
+            # ALUMNOS --
+            proba_perdida = self.protocol.alumnos_get_proba_perdida()
+            moneda = random.random()
+            if moneda > proba_perdida:
+            # ALUMNOS --
+                self.send_ack()
+                
+                
     def handle_incoming_on_established(self, packet):
         if FINFlag in packet:
             self.handle_incoming_fin(packet, next_state=CLOSE_WAIT)
