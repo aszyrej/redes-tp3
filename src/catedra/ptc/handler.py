@@ -37,8 +37,8 @@ class IncomingPacketHandler(object):
     def send_ack(self):
     
         # ALUMNOS ------------------------
-        delay = self.protocol.alumnos_get_delay() * CLOCK_TICK
-        time.sleep(delay)
+        #delay = self.protocol.alumnos_get_delay()# * CLOCK_TICK
+        #time.sleep(delay)
         # ALUMNOS ------------------------    
 
         ack_packet = self.build_packet()
@@ -129,11 +129,11 @@ class IncomingPacketHandler(object):
         if packet.has_payload():
         
             # ALUMNOS --
-            proba_perdida = self.protocol.alumnos_get_proba_perdida()
-            moneda = random.random()
-            if moneda > proba_perdida:
+            #proba_perdida = self.protocol.alumnos_get_proba_perdida()
+            #moneda = random.random()
+            #if moneda > proba_perdida:
             # ALUMNOS --
-                self.send_ack()
+            self.send_ack()
                 
                 
     def handle_incoming_on_established(self, packet):

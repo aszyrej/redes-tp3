@@ -15,6 +15,8 @@ import threading
 from constants import INITIAL_RTO, MAX_RTO, ALPHA, BETA, K
 from seqnum import SequenceNumber
 
+VERBOSE = True
+
 
 # Estimación de RTO según el RFC 6298, pero implementado en forma naive.
 class RTOEstimator(object):
@@ -24,6 +26,7 @@ class RTOEstimator(object):
         self.alpha = alpha
         self.beta = beta
         #-----------------
+        self.sampled_rtt = 0
         self.srtt = 0
         self.rttvar = 0
         self.rto = INITIAL_RTO
@@ -33,7 +36,7 @@ class RTOEstimator(object):
     
     def get_estimated_rtt(self):
         with self.lock:
-            return self.srtt   
+            return self.sampled_rtt   
     
     def get_current_rto(self):
         with self.lock:
@@ -73,8 +76,18 @@ class RTOEstimator(object):
             if not self.tracking:
                 return
             if self.ack_covers_tracked_packet(ack_packet.get_ack_number()):
-                sampled_rtt = self.protocol.get_ticks() - self.rtt_start_time
-                self.update_rtt_estimation_with(sampled_rtt)
+                self.sampled_rtt = self.protocol.get_ticks() - self.rtt_start_time
+
+                # ALUMNOS ------------------------
+                if VERBOSE:
+                    rto = self.rto
+                    rtt = self.sampled_rtt
+                    if not rto == 100:
+                        print "rto.py RTO Calculado {} ticks".format(rto);
+                        print "rto.py RTT Estimado  {} ticks".format(rtt);
+                # ALUMNOS ------------------------
+                
+                self.update_rtt_estimation_with(self.sampled_rtt)
                 self.update_rto()
                 self.untrack()
                 
@@ -82,14 +95,14 @@ class RTOEstimator(object):
         if self.srtt == 0:
             # Primera muestra. Actualizar los valores de acuerdo al paso 2.1
             # del RFC.
-            self.srtt = sampled_rtt
-            self.rttvar = sampled_rtt / 2
+            self.srtt = self.sampled_rtt
+            self.rttvar = self.sampled_rtt / 2
         else:
             # Tenemos por lo menos una muestra, por lo que actualizamos los
             # valores según el paso 2.2 del RFC.
-            deviation = abs(self.srtt - sampled_rtt)
+            deviation = abs(self.srtt - self.sampled_rtt)
             self.rttvar = (1 - self.beta) * self.rttvar + self.beta * deviation
-            self.srtt = (1 - self.alpha) * self.srtt + self.alpha * sampled_rtt
+            self.srtt = (1 - self.alpha) * self.srtt + self.alpha * self.sampled_rtt
             
     def update_rto(self):
         self.rto = self.srtt + max(1, K * self.rttvar)

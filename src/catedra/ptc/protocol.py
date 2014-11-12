@@ -12,6 +12,7 @@
 
 import threading
 import random
+import time
 
 
 from cblock import PTCControlBlock
@@ -35,16 +36,18 @@ from thread import Clock, PacketSender, PacketReceiver
 from timer import RetransmissionTimer
 
 # ALUMNOS ------------------------
-from constants import ALPHA, BETA
+from constants import ALPHA, BETA, PERDIDA, DELAY
 # ALUMNOS ------------------------
+
+VERBOSE = False
 
 class PTCProtocol(object):
     
-    def __init__(self, alpha=ALPHA, beta=BETA, perdida=0.0, delay=0):
+    def __init__(self, alpha=ALPHA, beta=BETA, perdida=PERDIDA, delay=DELAY):
        
         # ALUMNOS ------------------------    
-        self.proba_perdida = perdida
-        self.delay = delay
+        self.proba_perdida = PERDIDA
+        self.delay = DELAY
         # ALUMNOS ------------------------    
         
         self.state = CLOSED
@@ -174,9 +177,26 @@ class PTCProtocol(object):
             # Usar la estimación actual del RTO para medir este paquete.
             current_rto = self.rto_estimator.get_current_rto()
             self.retransmission_timer.start(current_rto)
-        
-        self.socket.send(packet)
 
+
+        # ALUMNOS ------------------------
+        if VERBOSE:
+            rto = self.alumnos_get_rto()
+            rtt = self.alumnos_get_srtt()
+            if not rto == 100:
+                print "prot.py RTO Calculado {} ticks".format(rto);
+                print "prot.py RTT Estimado  {} ticks".format(rtt);
+        
+
+        delay = self.alumnos_get_delay()# * CLOCK_TICK
+        time.sleep(delay)
+        # ALUMNOS ------------------------
+        proba_perdida = self.alumnos_get_proba_perdida()
+        moneda = random.random()
+        if moneda > proba_perdida:
+            self.socket.send(packet)
+        else:
+            print "PERDIDO"
         
     def set_destination_on_packet_builder(self, address, port):
         self.packet_builder.set_destination_address(address)

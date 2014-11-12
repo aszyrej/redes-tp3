@@ -19,14 +19,14 @@ from exceptions import PTCError
 from protocol import PTCProtocol
 
 # ALUMNOS ------------------------
-from constants import ALPHA, BETA
-VERBOSE = True
+from constants import ALPHA, BETA, PERDIDA, DELAY
+VERBOSE = False
 # ALUMNOS ------------------------
 
 class Socket(object):
     
     # ALUMNOS ------------------------
-    def __init__(self, alpha=ALPHA, beta=BETA, perdida=0.0, delay=0):
+    def __init__(self, alpha=ALPHA, beta=BETA, perdida=PERDIDA, delay=DELAY):
         self.protocol = PTCProtocol(alpha, beta, perdida, delay)
         self.sockname = None
 
