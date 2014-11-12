@@ -46,8 +46,8 @@ class PTCProtocol(object):
     def __init__(self, alpha=ALPHA, beta=BETA, perdida=PERDIDA, delay=DELAY):
        
         # ALUMNOS ------------------------    
-        self.proba_perdida = PERDIDA
-        self.delay = DELAY
+        self.proba_perdida = perdida
+        self.delay = delay
         # ALUMNOS ------------------------    
         
         self.state = CLOSED

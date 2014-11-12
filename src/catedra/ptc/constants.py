@@ -64,5 +64,5 @@ BETA = 0.25
 K = 4
 
 #alumnos
-PERDIDA = 0.05
-DELAY = 0.5
+PERDIDA = 0.0
+DELAY = 0.0
