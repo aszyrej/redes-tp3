@@ -193,7 +193,7 @@ class PTCProtocol(object):
         # ALUMNOS ------------------------
         proba_perdida = self.alumnos_get_proba_perdida()
         moneda = random.random()
-        if moneda > proba_perdida:
+        if moneda > proba_perdida or not self.state == ESTABLISHED:
             self.socket.send(packet)
         else:
             print "PERDIDO"
