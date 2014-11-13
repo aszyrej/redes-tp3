@@ -1,0 +1,11 @@
+Los experimentos intentan mostrar la siguiente idea:
+
+Cuando alpha vale 0, la actualización de los valores del SRTT, y por lo tanto del RTO no consideran en absoluto los nuevos samples_RTT obtenidos. Por lo tanto es lógico
+que el resultado de los valores sea constante.
+
+Por el contrario, cuando alpha vale 1, la actualización no considera en absoluto los valores previos y se basa únicamente en el nuevo sample_RTT.
+
+Este tipo de fluctuaciones se acentúa mucho más en presencia de pérdidas de paquete.
+
+Finalmente, para un valor de alpha chico: en este caso 0.15, obtenemos un lindo equilibrio entre los 2 casos. Se pondera mucho más el valor histórico del SRTT, aunque
+dejándole cierto peso al nuevo sample_rtt obtenido. De esta manera obtenemos una curva mucho más suave.

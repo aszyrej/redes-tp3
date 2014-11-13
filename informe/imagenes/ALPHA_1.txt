@@ -1,0 +1,6 @@
+Valor de las constantes:
+
+ALPHA = 1
+BETA = 0
+PERDIDA = 0
+DELAY = 0.04
