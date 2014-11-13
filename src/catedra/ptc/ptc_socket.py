@@ -26,12 +26,15 @@ VERBOSE = False
 class Socket(object):
     
     # ALUMNOS ------------------------
-    def __init__(self, alpha=ALPHA, beta=BETA, perdida=PERDIDA, delay=DELAY):
-        self.protocol = PTCProtocol(alpha, beta, perdida, delay)
+    def __init__(self, alpha=ALPHA, beta=BETA, perdida=PERDIDA, delay=DELAY, verbose=False):
+        self.protocol = PTCProtocol(alpha, beta, perdida, delay, verbose)
         self.sockname = None
 
     def alumnos_change_delay(self, delay):
         self.protocol.alumnos_change_delay(delay);
+
+    def alumnos_change_proba(self, proba=0.0):
+        self.protocol.alumnos_change_proba(proba)
     # ALUMNOS ------------------------
 
     def bind(self, address_tuple=None):

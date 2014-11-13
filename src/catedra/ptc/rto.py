@@ -15,9 +15,6 @@ import threading
 from constants import INITIAL_RTO, MAX_RTO, ALPHA, BETA, K
 from seqnum import SequenceNumber
 
-VERBOSE = True
-
-
 # Estimación de RTO según el RFC 6298, pero implementado en forma naive.
 class RTOEstimator(object):
     
@@ -77,16 +74,6 @@ class RTOEstimator(object):
                 return
             if self.ack_covers_tracked_packet(ack_packet.get_ack_number()):
                 self.sampled_rtt = self.protocol.get_ticks() - self.rtt_start_time
-
-                # ALUMNOS ------------------------
-                if VERBOSE:
-                    rto = self.rto
-                    rtt = self.sampled_rtt
-                    if not rto == 100:
-                        print "rto.py RTO Calculado {} ticks".format(rto);
-                        print "rto.py RTT Estimado  {} ticks".format(rtt);
-                # ALUMNOS ------------------------
-                
                 self.update_rtt_estimation_with(self.sampled_rtt)
                 self.update_rto()
                 self.untrack()

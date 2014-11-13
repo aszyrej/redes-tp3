@@ -23,7 +23,8 @@ from constants import CLOSED, ESTABLISHED, SYN_SENT,\
                       NO_WAIT,\
                       MSS, MAX_SEQ, RECEIVE_BUFFER_SIZE,\
                       MAX_RETRANSMISSION_ATTEMPTS,\
-                      BOGUS_RTT_RETRANSMISSIONS
+                      BOGUS_RTT_RETRANSMISSIONS,\
+                      CLOCK_TICK                   
 from exceptions import PTCError
 from handler import IncomingPacketHandler
 from packet import ACKFlag, FINFlag, SYNFlag
@@ -39,15 +40,14 @@ from timer import RetransmissionTimer
 from constants import ALPHA, BETA, PERDIDA, DELAY
 # ALUMNOS ------------------------
 
-VERBOSE = False
-
 class PTCProtocol(object):
     
-    def __init__(self, alpha=ALPHA, beta=BETA, perdida=PERDIDA, delay=DELAY):
+    def __init__(self, alpha=ALPHA, beta=BETA, perdida=PERDIDA, delay=DELAY, verbose=False):
        
         # ALUMNOS ------------------------    
         self.proba_perdida = perdida
         self.delay = delay
+        self.verbose = verbose
         # ALUMNOS ------------------------    
         
         self.state = CLOSED
@@ -83,6 +83,9 @@ class PTCProtocol(object):
 
     def alumnos_get_srtt(self):
         return self.rto_estimator.get_estimated_rtt()   
+
+    def alumnos_change_proba(self, proba):
+        self.proba_perdida = proba
     # ALUMNOS ------------------------
                 
     def initialize_threads(self):
@@ -180,19 +183,12 @@ class PTCProtocol(object):
 
 
         # ALUMNOS ------------------------
-        if VERBOSE:
-            rto = self.alumnos_get_rto()
-            rtt = self.alumnos_get_srtt()
-            if not rto == 100:
-                print "prot.py RTO Calculado {} ticks".format(rto);
-                print "prot.py RTT Estimado  {} ticks".format(rtt);
-        
-
-        delay = self.alumnos_get_delay()# * CLOCK_TICK
+        delay = self.alumnos_get_delay() * CLOCK_TICK
         time.sleep(delay)
         # ALUMNOS ------------------------
         proba_perdida = self.alumnos_get_proba_perdida()
         moneda = random.random()
+
         if moneda > proba_perdida or not self.state == ESTABLISHED:
             self.socket.send(packet)
         else:
@@ -383,6 +379,12 @@ class PTCProtocol(object):
         self.join_threads()
             
     def free(self):
+    
+        if self.verbose:
+            rto = self.alumnos_get_rto()
+            rtt = self.alumnos_get_srtt()
+            print "RTO-RTT\t{}\t{}".format(rto,rtt);
+    
         if self.control_block is not None:
             self.control_block.flush_buffers()
         self.stop_threads()
