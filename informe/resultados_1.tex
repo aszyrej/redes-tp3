@@ -18,7 +18,7 @@ mayor importancia al valor de la última diferencia entre la muestra del RTT obt
 del SRTT.
 
 Todas las mediciones destinadas a encontrar valores adecuados de $\alpha$ y $\beta$ se realizaron
-con valores constantes de DELAY: 0.04 ms, probabilidad de PÉRDIDA: 0.2, K=4 y valor de
+con valores constantes de DELAY: 0.4 ms, probabilidad de PÉRDIDA: 0.02, K=4 y valor de
 TICK\_CLOCK = 1ms
 
 \begin{figure}[H]
@@ -44,6 +44,22 @@ ignoran los valores anteriores (tanto de variación de RTT (RTTVAR) somo de SRTT
 los resultados únicamente en función de la última muestra de RTT obtenida. El resultado es un gráfico
 en donde el RTO coincide exactamente con el SRTT, y ambos responden excesivamente a cualquier fluctuación
 que se produzca en el valor del RTT.
+
+
+\begin{figure}[H]
+  \begin{center}
+      \includegraphics[scale=0.32]{imagenes/ALPHA_050_BETA_050.jpg}
+      \caption{RTO, SRTT y RTT para ALPHA=0.5 y BETA=0.5}
+  \end{center}
+\end{figure}
+
+Una de las primeras ideas que tuvimos fue
+ponderar de igual manera los valores anteriores con los nuevos, al tomar ambas variables con valor
+0.5. Esto debería generar valores cercanos a los de lasmuestras anteriores, pero que sean capaces
+de responder a cambios significativos y permanentes del valor de RTT. En otras palabras, que alcancen
+un equilibrio entre ambas propuestas. Sin embargo, el comportamiento no fue el esperado.
+El resultado es una serie de cálculos demasiado sensibles a las fluctuaciones temporales que responden
+excesivamente a estos cambios.
 
 \begin{figure}[H]
   \begin{center}
@@ -74,16 +90,22 @@ correctamente advertidos por el cálculo del RTO. Esto se debe a que el valor de
 
 \begin{figure}[H]
   \begin{center}
-      \includegraphics[scale=0.32]{imagenes/ALPHA_050_BETA_050.jpg}
-      \caption{RTO, SRTT y RTT para ALPHA=0.5 y BETA=0.5}
+      \includegraphics[scale=0.32]{imagenes/OPTIMOS_MARCO_REAL.jpg}
+      \caption{RTO, SRTT y RTT para ALPHA=0.15 y BETA=0.20 en un marco real}
   \end{center}
 \end{figure}
 
-Finalmente decidimos experimentar con un par de valores que podría generar cálculos muy equilibrados:
-ponderar de igual manera los valores anteriores con los nuevos, al tomar ambas variables con valor
-0.5. Sin embargo los resultados están lejos de corroborar nuestras hipótesis.
-El resultado es una serie de cálculos demasiado sensibles a las fluctuaciones temporales que responden
-excesivamente a estos cambios.
+Finalmente agregamos un experimento en donde observamos el comportamiento de las actualizaciones en
+un marco más real. Establecemos el valor de probabilidad de pérdida en 0.05 y el valor del delay en
+10 ms.
+Los valores de las variables seleccionadas se comportan realmente bien. Por un lado responden de manera
+sensible a los cambios en el valor de los RTT. En suma, cuando no se
+producen este tipo de cambios (situaciones hipotéticas en donde no se caigan nodos dentro de la red, o
+la misma no se encuentre congestionada), el algoritmo pondera los valores anteriores y de a poco
+converge al valor del RTT real.
+
+Por estos motivos, decidimos seleccionar los valores de $\alpha=0.15$ y $\beta=0.20$.
+
 
 
 
