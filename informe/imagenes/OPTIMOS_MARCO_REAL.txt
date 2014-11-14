@@ -1,0 +1,4 @@
+ALPHA = 0.15
+BETA = 0.20
+PERDIDA = 0.05
+DELAY = 0.1
