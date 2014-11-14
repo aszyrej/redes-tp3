@@ -3,7 +3,7 @@
     En primera instancia se implementaron dos scripts en python que 
     actuan uno como cliente y otro como servidor.
     Luego, se modific\'o la implementaci\'on de PTC para poder simular
-    delay y perdida de paquetes, ademas de transformar en par\'ametros
+    delay y perdida de paquetes (el contexto de una red), adem\'as de transformar en par\'ametros
     a los valores $\alpha$ y $\beta$ para estudiar como se modifica el
     \rto{} en base a los mismos.  
 
@@ -24,9 +24,16 @@
     
     Se modific\'o el m\'etodo \textit{send\_and\_queue}, ahora, espera 
     \textit{delay} ticks antes de enviar el paquete con una probabilidad
-    de $1-perdida$.
+    de $1-perdida$. En una primera instancia se intent\'o incluir el delay
+    en la funci\'on \textit{send\_ack} del m\'odulo \textit{handler}, pero
+    en la experimentaci\'on notamos que ciertos valores de \textit{rtt estimado}
+    quedaban muy por debajo del delay seteado, por lo tanto entendimos que 
+    algunos acks nos evad\'ian, y se mandaban por otro m\'etodo. 
+    Dado que el paquete se trackea antes del delay en \textit{send\_and\_queue},
+    el cliente interpreta el tard\'io ack como una demora en la red y calcula el 
+    rtt/rto en base a esa demora.
 
-    Se modific\'o el m\'etodo \textit{free} para que imprima el \rto{} 
+    Se modific\'o tambi\'en el m\'etodo \textit{free} para que imprima el \rto{} 
     estimado durante la conexi\'on.        
     
     \subsubsection{ptc\_socket}
@@ -46,9 +53,9 @@
     \emph{Convergencia de RTO:} Queremos ver si el valor de \rto{} se
     estabiliza luego de enviar un gran n\'umero de paquetes.
   
-    \emph{Valor de RTO variando $\beta$}
+    \emph{Valor de RTO variando $\beta$:}
     
-    \emph{Valor de RTO variando $\alpha$}
+    \emph{Valor de RTO variando $\alpha$:}
     
     \emph{Valor de RTO cuando la red se congestiona de golpe:} En este
     caso queremos ver que sucede cuando la red esta operando normalmente

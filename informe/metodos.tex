@@ -2,7 +2,7 @@
     
     El protocolo PTC utiliza un sistema de \textit{acknowledge} para
     saber si un paquete fue recibido. En caso de no recibir un \textit{ack}
-    paraun  determinado paquete luego de un umbral de tiempo, procede a
+    para un  determinado paquete luego de un umbral de tiempo, procede a
     retransmitirlo. Dicho umbral, denominado \textit{rto} se va estimando
     a medida que se reconocen los paquetes enviados usando las 
     siguientes funciones: 
@@ -13,9 +13,9 @@
         
     Donde $K, \alpha, \beta \in \mathbb{Q}$, $RTT$ es el valor de 
     \textit{rtt} calculado para el \'ultimo \textit{ack} recibido. 
-    En la implementaci\'on utilizada se inicializan los valors de la
+    En la implementaci\'on utilizada se inicializan los valores de la
     siguiente manera: $K = 4, \alpha={{1}\over{8}}$,
-    $\beta={{1}\over{2}}$, $SRTT={RTT_0}$, $RTTVAR={{RTT}\over{2}}$.
+    $\beta={{1}\over{4}}$, $SRTT={RTT_0}$, $RTTVAR={{RTT}\over{2}}$.
     Siendo $RTT_0$ el primer \textit{rtt} calculado.
     
     
