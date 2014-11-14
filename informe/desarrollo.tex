@@ -1,0 +1,39 @@
+\section{Desarrollo}
+
+    En primera instancia se implementaron dos scripts en python que 
+    actuan uno como cliente y otro como servidor.
+    Luego, se modific\'o la implementaci\'on de PTC para poder simular
+    delay, perdida de paquetes, par\'ametros $\alpha$ y $\beta$ para 
+    estudiar como se modifica el \textit{rto} en base a los mismos.  
+
+\subsection{Modificaciones a la Implementaci\'on}
+    Se agregaron al sistema variables para manejar la probabilidad de que 
+    un paquete se pierda en el env\'io, el delay antes de contestar con 
+    un ACK, el valor de $\alpha$ y $\beta$.
+
+\subsubsection{rto}
+    Se modific\'o para que los valores de $\alpha$ y $\beta$ fueran 
+    variables seteables al momento de inicializar el \textit{RTOEstimator}.
+    
+\subsubsection{protocol}
+    Se modific\'o la incializaci\'on, ahora recibe los par\'ametros 
+    $\alpha$, $\beta$, \textit{perdida} y \textit{delay}.
+    
+    $\alpha$, $\beta$ se utilizan para inicializar el \textit{RTOEstimator}.
+    
+    Se modific\'o el m\'etodo \textit{send\_and\_queue}, ahora, espera 
+    \textit{delay} ticks antes de enviar el paquete con una probabilidad
+    de $1-perdida$.
+
+    Se modific\'o el m\'etodo \textit{free} para que imprima el RTO 
+    estimado durante la conexi\'on.        
+    
+\subsubsection{ptc\_socket}
+    Se modific\'o el wrapper, ahora se debe inicializar con valores para 
+    $\alpha$, $\beta$, \textit{perdida} y \textit{delay}, los mismos son
+    utilizados al momento de crear el objeto \textit{PTCProtocol} del 
+    paquete \textit{protocol}.
+    
+    Se cre\'o el m\'etodo \textit{alumnos\_change\_delay} que recibe un
+    entero y cambia el delay de la conexi\'on mediante el m\'etodo nuevo
+    puesto en \textit{protocol}.

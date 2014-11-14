@@ -23,9 +23,9 @@ class RTOEstimator(object):
         self.alpha = alpha
         self.beta = beta
         #-----------------
-        self.sampled_rtt = 0
-        self.srtt = 0
-        self.rttvar = 0
+        self.sampled_rtt = 0.
+        self.srtt = 0.
+        self.rttvar = 0.
         self.rto = INITIAL_RTO
         self.protocol = protocol
         self.tracking = False
@@ -59,14 +59,14 @@ class RTOEstimator(object):
         
     def back_off_rto(self):
         with self.lock:
-            self.rto = min(MAX_RTO, 2 * self.rto)
+            self.rto = min(MAX_RTO, 2. * self.rto)
             
     def clear_rtt(self):
         with self.lock:
             # Mantener los tiempos actuales de retransmisión hasta que puedan
             # efectuarse nuevas estimaciones.
             self.rttvar += self.srtt
-            self.srtt = 0
+            self.srtt = 0.
 
     def process_ack(self, ack_packet):
         with self.lock:
@@ -83,16 +83,16 @@ class RTOEstimator(object):
             # Primera muestra. Actualizar los valores de acuerdo al paso 2.1
             # del RFC.
             self.srtt = self.sampled_rtt
-            self.rttvar = self.sampled_rtt / 2
+            self.rttvar = self.sampled_rtt / 2.
         else:
             # Tenemos por lo menos una muestra, por lo que actualizamos los
             # valores según el paso 2.2 del RFC.
             deviation = abs(self.srtt - self.sampled_rtt)
-            self.rttvar = (1 - self.beta) * self.rttvar + self.beta * deviation
-            self.srtt = (1 - self.alpha) * self.srtt + self.alpha * self.sampled_rtt
+            self.rttvar = (1. - self.beta) * self.rttvar + self.beta * deviation
+            self.srtt = (1. - self.alpha) * self.srtt + self.alpha * self.sampled_rtt
             
     def update_rto(self):
-        self.rto = self.srtt + max(1, K * self.rttvar)
+        self.rto = self.srtt + max(1., K * self.rttvar)
     
     def ack_covers_tracked_packet(self, ack_number):
         iss = self.protocol.iss

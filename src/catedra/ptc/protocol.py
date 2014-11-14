@@ -86,6 +86,11 @@ class PTCProtocol(object):
 
     def alumnos_change_proba(self, proba):
         self.proba_perdida = proba
+        
+    def print_rto(self):
+        rto = self.alumnos_get_rto()
+        rtt = self.alumnos_get_srtt()
+        print "RTO-RTT\t{:.2f}\t{}".format(rto,rtt);    
     # ALUMNOS ------------------------
                 
     def initialize_threads(self):
@@ -383,7 +388,7 @@ class PTCProtocol(object):
         if self.verbose:
             rto = self.alumnos_get_rto()
             rtt = self.alumnos_get_srtt()
-            print "RTO-RTT\t{}\t{}".format(rto,rtt);
+            print "RTO-RTT\t{:.2f}\t{}".format(rto,rtt);
     
         if self.control_block is not None:
             self.control_block.flush_buffers()
