@@ -8,6 +8,8 @@ except:
     from ptc import Socket, SHUT_WR
 
 import time
+import pylab
+
 
 SERVER_IP = '127.0.0.1'
 SERVER_PORT = 6677
@@ -16,92 +18,211 @@ to_send = 'msg'
 end     = 'end'
 
 def conectar_server(cliente, n):
-    '''cliente =  {'alpha':X, 'beta':X, 'proba':X, 'delay':X}
-       n       = numero de msg que envia '''
-
     time.sleep(1)
-
     a, b = cliente['alpha'], cliente['beta']
-    d, p = cliente['proba'], cliente['delay']
+    d, p = cliente['delay'], cliente['proba']
     verbose = True
 
-    with Socket(a, b, d, p, verbose=True) as client_sock:
+    with Socket(a, b, p, d, verbose) as client_sock:
         client_sock.connect((SERVER_IP, SERVER_PORT), timeout=5)
-
+    
         for i in xrange(n):
             client_sock.send(to_send)
-       
+
+        time.sleep(1)
+
+        rto, rtt = client_sock.alumnos_print_rto()
+        perdidos = client_sock.alumnos_get_retransmitions()
+
         #El ultimo mensaje tiene que llegar si o si
         client_sock.alumnos_change_proba(0.0)
-        client_sock.send('end')
+        client_sock.send(end)
+        
+    return rto, rtt, perdidos
+
 
 def n_vs_rto():
     print "N VS RTO"
 
-    envios  = [1,5,10,15,20,25]
-    cliente = {'alpha':1./8., 'beta':1./2., 'proba':0.0, 'delay':0.0}
+    time.sleep(1)
+
+    alpha, beta  = 1./8., 1./2.
+    delay, proba = 25.0 , 0.0
+    verbose = False
+    rtos = []
+    rtts = []
+
+    with Socket(alpha, beta, proba, delay, verbose ) as client_sock:
+        client_sock.connect((SERVER_IP, SERVER_PORT), timeout=5)
+
+        #Veo el RTO
+        client_sock.alumnos_print_rto()       
+
+        for i in xrange(30*5):
+
+            client_sock.send(to_send)
+
+            if i%5 == 0:
+                # Cada 5 envios veo el RTO luego de
+                # asegurarme que llegaron todos los paquetes
+                time.sleep(1)
+                rto, rtt = client_sock.alumnos_print_rto()       
+                rtos += [rto]
+                rtts += [rtt]
+                
+        print "termino"            
+        #El ultimo mensaje tiene que llegar si o si
+        client_sock.send(end)
+
+    paquetes = [i*5 for i in xrange(30)]
+    pylab.plot(paquetes, rtos)
+    pylab.plot(paquetes, rtts)   
+
+    pylab.xlabel('Cantidad Paquetes Enviados')
+    pylab.ylabel('RTO (ticks)')
+    pylab.title ('RTO vs Numero de Paquetes')
+    pylab.legend(['rto','rtt'])
+    pylab.tight_layout()
+    pylab.savefig('n_vs_rto', format='pdf', orientation='landscape')
+    pylab.clf()
+ 
+def rto_vs_alpha_vs_beta(): 
+    print "ALPHA, BETA VS RTO"
+
+    arr_alpha = pylab.arange(0., 1.2, 0.2)
+    arr_betas = pylab.arange(0., 1.2, 0.2)
+    n = 50
+    lalpha = len(arr_alpha)
+    lbetas = len(arr_betas)
+    resus = [ [0. for i in xrange(lalpha)] for j in xrange(lbetas)]
+
+    for i in xrange(lalpha):
+        for j in xrange(lbetas):
+        
+            a = arr_alpha[i]
+            b = arr_betas[j]
+            cliente = {'alpha':a, 'beta':b, 'proba':0.0, 'delay':25.0}
+            rto, rtt, _ = conectar_server(cliente, n)
+
+            print rto, rtt
+            
+            resus[lalpha-1-i][j] = rto
+
+    #color_plot(resus)
+    arr_betas_r = [b for b in reversed(arr_betas)]
+    pylab.xticks(xrange(lalpha), arr_alpha)
+    pylab.yticks(xrange(lbetas), arr_betas_r)
+    pylab.imshow(resus, interpolation='nearest')
+    pylab.colorbar()
+    pylab.xlabel(r'$\beta$')
+    pylab.ylabel(r'$\alpha$')
+    pylab.title (r'RTO para valores de $\alpha$ y $\beta$')
+    pylab.tight_layout()
+    pylab.savefig('colormap', format='pdf', orientation='landscape')
+    pylab.clf()
+
+def perdidos_vs_alpha_vs_beta(): 
+    print "ALPHA, BETA VS RTO"
+
+    arr_alpha = pylab.arange(0., 1.2, 0.2)
+    arr_betas = pylab.arange(0., 1.2, 0.2)
+    n = 300
+    lalpha = len(arr_alpha)
+    lbetas = len(arr_betas)
+    resus = [ [0. for i in xrange(lalpha)] for j in xrange(lbetas)]
+
+    for i in xrange(lalpha):
+        for j in xrange(lbetas):
+        
+            a = arr_alpha[i]
+            b = arr_betas[j]
+            cliente = {'alpha':a, 'beta':b, 'proba':0.0, 'delay':25.0}
+            _, _, cant = conectar_server(cliente, n)
     
-    print "ENVIOS:", envios
+            print cant
+            resus[lalpha-1-i][j] = cant
 
-    for n in envios:
-        conectar_server(cliente, n)
+    #color_plot(resus)
+    arr_betas_r = [b for b in reversed(arr_betas)]
+    pylab.xticks(xrange(lalpha), arr_alpha)
+    pylab.yticks(xrange(lbetas), arr_betas_r)
+    pylab.imshow(resus, interpolation='nearest')
+    pylab.colorbar()
+    pylab.xlabel(r'$\beta$')
+    pylab.ylabel(r'$\alpha$')
+    pylab.title (r'Retransmisiones para $\alpha$ y $\beta$')
+    pylab.tight_layout()
+    pylab.savefig('ret_colormap', format='pdf', orientation='landscape')
+    pylab.clf()
 
-def beta_vs_rto(): 
-    print "BETA VS RTO"
+def congestion_subita():
+    print "CONGESTION"
 
-    n     = 10
-    betas = [0., 1./4., 1./2., 3./4., 1.]
+    time.sleep(1)
 
-    print "BETAS:", betas
+    alpha, beta  = 1./8., 1./2.
+    delay, proba = 25.0 , 0.0
+    verbose = False
+    rtos = []
+    rtts = []
 
-    for beta in betas:
-        cliente = {'alpha':1./8., 'beta':beta, 'proba':0.0, 'delay':0.0}
-        conectar_server(cliente, n)
+    with Socket(alpha, beta, proba, delay, verbose ) as client_sock:
+        client_sock.connect((SERVER_IP, SERVER_PORT), timeout=5)
 
-def alpha_vs_rto(): 
-    print "ALPHA VS RTO"
+        #Veo el RTO
+        client_sock.alumnos_print_rto()       
 
-    n      = 10
-    alphas = [0., 1./4., 1./2., 3./4., 1.]
+        for i in xrange(150):
 
-    print "ALPHAS:", alphas
+            client_sock.send(to_send)
 
-    for alpha in alphas:
-        cliente = {'alpha':alpha, 'beta':1./2., 'proba':0.0, 'delay':0.0}
-        conectar_server(cliente, n)
+            if i%5 == 0:
+                # Cada 5 envios veo el RTO luego de
+                # asegurarme que llegaron todos los paquetes
+                time.sleep(0.6)
+                rto, rtt = client_sock.alumnos_print_rto()       
+                rtos += [rto]
+                rtts += [rtt]
+                
+        print "Ahora DELAY DE LA MUERTE"
+        
+        client_sock.alumnos_change_delay(100.)
 
-def delay_vs_rto(): 
-    print "DELAY VS RTO"
+        for i in xrange(150):
 
-    n      = 10
-    delays = [0., 5., 10., 15., 20.]
+            client_sock.send(to_send)
 
-    print "DELAYS", delays
+            if i%5 == 0:
+                # Cada 5 envios veo el RTO luego de
+                # asegurarme que llegaron todos los paquetes
+                time.sleep(0.6)
+                rto, rtt = client_sock.alumnos_print_rto()       
+                rtos += [rto]
+                rtts += [rtt]
+            
+        #El ultimo mensaje tiene que llegar si o si
+        client_sock.send(end)
 
-    for delay in delays:
-        cliente = {'alpha':1./8., 'beta':1./2., 'proba':0.0, 'delay':delay}
-        conectar_server(cliente, n)
+    paquetes = [i*5 for i in xrange(60)]
+    pylab.plot(paquetes, rtos)
+    pylab.plot(paquetes, rtts)   
 
-def proba_vs_rto(): 
-    print "PROBA VS RTO"
+    pylab.xlabel('Cantidad Paquetes Enviados')
+    pylab.ylabel('RTO (ticks)')
+    pylab.title ('RTO vs Numero de Paquetes')
+    pylab.legend(['rto','rtt'])
+    pylab.tight_layout()
+    pylab.savefig('congestion', format='pdf', orientation='landscape')
+    pylab.clf()
 
-    n      = 10
-    probas = [0., 0.1, 0.2, 0.3, 0.4]
 
-    print "PROBAS", probas
-
-    for proba in probas:
-        cliente = {'alpha':1./8., 'beta':1./2., 'proba':proba, 'delay':0.0}
-        conectar_server(cliente, n)
+    
 
 def main():
-    n_vs_rto()
-    alpha_vs_rto()
-    beta_vs_rto()
-    delay_vs_rto()
-    proba_vs_rto()
-    
-
+#   n_vs_rto()
+#   rto_vs_alpha_vs_beta()
+#   perdidos_vs_alpha_vs_beta()
+    congestion_subita()
 
 if __name__ == "__main__":
     main()

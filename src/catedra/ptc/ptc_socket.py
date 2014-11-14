@@ -35,6 +35,13 @@ class Socket(object):
 
     def alumnos_change_proba(self, proba=0.0):
         self.protocol.alumnos_change_proba(proba)
+        
+    def alumnos_print_rto(self):
+        return self.protocol.print_rto();    
+        
+    def alumnos_get_retransmitions(self):
+        return self.protocol.get_retransmitions()
+            
     # ALUMNOS ------------------------
 
     def bind(self, address_tuple=None):

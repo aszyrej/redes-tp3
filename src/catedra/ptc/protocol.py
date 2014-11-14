@@ -48,6 +48,7 @@ class PTCProtocol(object):
         self.proba_perdida = perdida
         self.delay = delay
         self.verbose = verbose
+        self.retransmisiones = 0
         # ALUMNOS ------------------------    
         
         self.state = CLOSED
@@ -90,7 +91,12 @@ class PTCProtocol(object):
     def print_rto(self):
         rto = self.alumnos_get_rto()
         rtt = self.alumnos_get_srtt()
-        print "RTO-RTT\t{:.2f}\t{}".format(rto,rtt);    
+        print "RTO-RTT\t{:.2f}\t{}".format(rto,rtt);
+        return rto, rtt    
+        
+    def get_retransmitions(self):
+        return self.retransmisiones
+        
     # ALUMNOS ------------------------
                 
     def initialize_threads(self):
@@ -164,6 +170,8 @@ class PTCProtocol(object):
 
     def send_and_queue(self, packet, is_retransmission=False):
         if is_retransmission:
+            print "RETRANSMISION"
+            self.retransmisiones += 1
             # Algoritmo de Karn: no usar paquetes retransmitidos para
             # actualizar las estimaciones del RTO.
             if self.rto_estimator.is_tracking_packets():
