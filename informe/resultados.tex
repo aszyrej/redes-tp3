@@ -1,0 +1,160 @@
+\subsection{Resultados}
+
+    \subsubsection{Valor de RTO variando $\alpha$ y $\beta$}
+    
+        Primero estudiamos como var\'ia el \rto{} cuando se utilizan los
+        valores extremos de $\alpha$ y $\beta$. Se utiliz\'o un valor 
+        de delay = \textit{6 ticks} sin probabilidad de p\'erdida.
+
+        Puede verse en la \textit{Figura 1}, que tomando $\alpha=0$, 
+        $\beta=0$ los cálculos ignoran por completo los nuevos 
+        valores de RTT y consideran únicamente los valores de SRTT
+        anteriores. En este caso, el valor constante inicial.
+
+        La \textit{Figura 2} muestra como al tomar ambas variables el valor
+        1, los cálculos ignoran los valores anteriores (tanto de variación
+        de RTT (RTTVAR) como de SRTT), y modifican los resultados
+        únicamente en función de la última muestra de RTT obtenida. El
+        resultado es un gráfico en donde el RTO coincide exactamente con
+        el SRTT, y ambos responden excesivamente a cualquier fluctuación
+        que se produzca en el valor del RTT.
+    
+        Por otra parte, la \textit{Figura 3} muestra lo que sucede al 
+        ponderar de igual manera los valores anteriores con los nuevos, al
+        tomar ambas variables con valor 0.5. Esto debería generar valores
+        cercanos a los de las muestras anteriores, pero que sean capaces
+        de responder a cambios significativos y permanentes del valor de
+        RTT. En otras palabras, que alcancen un equilibrio entre ambas
+        propuestas. Sin embargo, el comportamiento no fue el esperado. 
+        
+        El resultado es una serie de cálculos demasiado sensibles a las
+        fluctuaciones temporales que responden excesivamente a estos
+        cambios. Por ello hicimos una \'ultima prueba (\textit{Figura 4})
+        donde fijamos el valor de $\alpha$ en 0.15 y $\beta$ en 0.20 
+        (cercanos al propuesto por el RFC 6298).
+        Las conexiones en las distintas redes por lo general permanecen
+        estables la mayor parte del tiempo, por lo que los cambios bruscos
+        de \rtt{} son poco probables. Por otro lado el valor de $\beta$ 
+        permite agregar un poco de sensibilidad a los cambios en el valor
+        de los \textit{rtts}.
+
+        \begin{figure}[H]
+	    \center
+	    \begin{subfigure}{0.48\textwidth}
+		    \includegraphics[width=1.0\textwidth]{imagenes/test_0_0.jpg}
+		    \caption{Figura 1}
+	    \end{subfigure}
+	    ~
+	    \begin{subfigure}{0.48\textwidth}
+		    \includegraphics[width=1.0\textwidth]{imagenes/test_1_1.jpg}
+		    \caption{Figura 2}
+	    \end{subfigure}
+	    \end{figure}    
+
+        \begin{figure}[H]
+	    \center
+	    \begin{subfigure}{0.48\textwidth}
+		    \includegraphics[width=1.0\textwidth]{imagenes/test_5_5.jpg}
+		    \caption{Figura 3}
+	    \end{subfigure}
+	    ~
+	    \begin{subfigure}{0.48\textwidth}
+		    \includegraphics[width=1.0\textwidth]{imagenes/test_a_b.jpg}
+		    \caption{Figura 4}
+	    \end{subfigure}
+	    \end{figure}    
+	       
+        Finalmente intentamos medir muchos valores de \rto{} para 
+        diversas convinaciones de $\alpha$ y $\beta$. 
+        Los resultados de medir el \rto{} para un valor fijo de 
+        \textit{25 ticks} y probabilidad de perdida cero luego de 
+        enviar 200 paquetes se pueden ver en la \emph{Figura 4}.
+        
+    \subsubsection{Perdida de paquetes variando $\alpha$ y $\beta$}
+        Para estudiar la perdida de paquetes se fij\'o el valor de 
+        de \rto{} en \textit{25 ticks} y no se simularon p\'erdidas.
+        Sin embargo en varios casos hubo retransmisiones, la 
+        \textit{Figura 5} muestra el resultado para el env\'io de 150
+        paquetes mientras que la \textit{Figura 6} lo muestra para 300.
+        
+    \begin{figure}[H]
+	    \center
+	    \begin{subfigure}{0.32\textwidth}
+		    \includegraphics[width=1.0\textwidth]{imagenes/rto_vs_alphaBeta.pdf}
+		    \caption{Figura 4}
+	    \end{subfigure}
+	    ~
+	    \begin{subfigure}{0.32\textwidth}
+		    \includegraphics[width=1.0\textwidth]{imagenes/retransmisiones_150.pdf}
+		    \caption{Figura 5}
+	    \end{subfigure}
+	    ~
+	    \begin{subfigure}{0.32\textwidth}
+		    \includegraphics[width=1.0\textwidth]{imagenes/retransmisiones_300.pdf}
+		    \caption{Figura 6}
+	    \end{subfigure}
+	
+    \end{figure}    
+
+
+    \subsubsection{Valor de RTO cuando la red se congestiona sin perdida}
+        Para este configuramos el cliente para que env\'ie 300 paquetes al
+        servidor, pero luego de enviarse 150 paquetes, el delay de la red
+        se duplicara o cuadruplicara. 
+        
+        El \emph{Escenario 1} muestra el resultado en una red con
+        par\'aemtros: $\alpha={{1}\over{2}}$, $\beta={{1}\over{4}}$
+        cuando no se congestiona, cuando la congesti\'on causa el doble de
+        delay, y cuando causa el cuadruple.
+  
+        \begin{figure}[H]
+            \center
+	        
+		    \includegraphics[width=0.32\textwidth]{imagenes/rtt_vs_n_2_4.pdf}
+		    \includegraphics[width=0.32\textwidth]{imagenes/congestion_50_2_4.pdf}
+		    \includegraphics[width=0.32\textwidth]{imagenes/congestion_100_2_4.pdf}
+
+            \caption{Escenario 1}
+	
+        \end{figure}          
+  
+        El \emph{Escenario 2} muestra el resultado en una red con
+        par\'aemtros: $\alpha={{1}\over{8}}$, $\beta={{1}\over{2}}$ 
+        cuando no se congestiona, cuando la congesti\'on causa el doble de
+        delay, y cuando causa el cuadruple.
+
+        \begin{figure}[H]
+            \center
+	        
+		    \includegraphics[width=0.32\textwidth]{imagenes/rtt_vs_n_8_2.pdf}
+		    \includegraphics[width=0.32\textwidth]{imagenes/congestion_50_8_2.pdf}
+		    \includegraphics[width=0.32\textwidth]{imagenes/congestion_100_8_2.pdf}
+
+            \caption{Escenario 1}
+	
+        \end{figure}          
+
+        En ambos casos sucedi\'o que al duplicar el valor del delay el 
+        mensaje n\'umero 101 debi\'o ser retransmitido. A su vez, cuando 
+        se cuadruplic\'o el valor de la red, el mensaje n\'umero 101 debi\'o
+        ser retransmitido dos veces. 
+        Tambi\'en se puede notar que en ambos casos luego de cuadruplicarse
+        el delay no se logr\'o volver a un \rto{} cercano a el \rtt{} real.
+
+
+    \subsubsection{Tiempo total de transmisi\'on en entorno con p\'erdidas}
+        
+        Para este experimento se configur\'o un escenario en el cual el 
+        cliente env\'ia 300 mensajes al servidor, pasados los 150 el delay
+        se incrementa de \textit{25 ticks} a \textit{50 ticks}. A su vez,
+        la probabilidad de perder un paquete es de 0.1.
+        
+        Para los valores de $\alpha=0$ y $\beta=0$ el tiempo fue 42,19 seg,
+        para los valores propuestos por el RFC el tiempo promedio fue
+        41,67 seg, para $\alpha=0.15$ y $\beta=0.2$ 42,39 seg, finalmente  
+        para $\alpha=1$ y $\beta=1$ el tiempo fue 44,34 seg.
+        
+        Podemos ver que entre el primer resultado hay casi dos segundos 
+        de diferencia, teniendo en cuenta que el tiempo para enviar un 
+        mensaje entre ambos nodos es menor a 0.1 seg, podemos ver que la 
+        diferencia de performance es notable.
