@@ -160,8 +160,8 @@ def congestion_subita():
 
     time.sleep(1)
 
-    alpha, beta  = 1./8., 1./2.
-    delay, proba = 25.0 , 0.0
+    alpha, beta  = 0., 0.
+    delay, proba = 25. , 0.05
     verbose = False
     rtos = []
     rtts = []
@@ -186,7 +186,7 @@ def congestion_subita():
                 
         print "Ahora DELAY DE LA MUERTE"
         
-        client_sock.alumnos_change_delay(100.)
+        client_sock.alumnos_change_delay(50.)
 
         for i in xrange(150):
 
@@ -222,7 +222,7 @@ def main():
 #   n_vs_rto()
 #   rto_vs_alpha_vs_beta()
 #   perdidos_vs_alpha_vs_beta()
-    congestion_subita()
+   congestion_subita()
 
 if __name__ == "__main__":
     main()

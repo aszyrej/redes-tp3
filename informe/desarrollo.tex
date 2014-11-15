@@ -17,7 +17,7 @@
     variables seteables al momento de inicializar el \textit{RTOEstimator}.
     
     \subsubsection{protocol}
-    Se modific\'o la incializaci\'on, ahora recibe los par\'ametros 
+    Se modific\'o la inicializaci\'on, ahora recibe los par\'ametros 
     $\alpha$, $\beta$, \textit{perdida} y \textit{delay}.
     
     $\alpha$, $\beta$ se utilizan para inicializar el \textit{RTOEstimator}.
@@ -26,15 +26,20 @@
     \textit{delay} ticks antes de enviar el paquete con una probabilidad
     de $1-perdida$. En una primera instancia se intent\'o incluir el delay
     en la funci\'on \textit{send\_ack} del m\'odulo \textit{handler}, pero
-    en la experimentaci\'on notamos que ciertos valores de \textit{rtt estimado}
+    en la experimentaci\'on notamos que ciertos valores de 
+    \textit{rtt estimado}
     quedaban muy por debajo del delay seteado, por lo tanto entendimos que 
     algunos acks nos evad\'ian, y se mandaban por otro m\'etodo. 
-    Dado que el paquete se trackea antes del delay en \textit{send\_and\_queue},
-    el cliente interpreta el tard\'io ack como una demora en la red y calcula el 
-    rtt/rto en base a esa demora.
+    Dado que el paquete se trackea antes del delay en 
+    \textit{send\_and\_queue},
+    el cliente interpreta el tard\'io ack como una demora en la red y
+    calcula el rtt/rto en base a esa demora.
 
-    Se modific\'o tambi\'en el m\'etodo \textit{free} para que imprima el \rto{} 
-    estimado durante la conexi\'on.        
+    Se modific\'o tambi\'en el m\'etodo \textit{free} para que imprima el
+    \rto{} estimado durante la conexi\'on.      
+    
+    Se agregaron m\'etodos para poder saber en cualquier momento la cantidad
+    de paquetes reenviados y el \rto{}, \rtt{} actuales.  
     
     \subsubsection{ptc\_socket}
     Se modific\'o el wrapper, ahora se debe inicializar con valores para 
@@ -45,6 +50,28 @@
     Se cre\'o el m\'etodo \textit{alumnos\_change\_delay} que recibe un
     entero y cambia el delay de la conexi\'on mediante el m\'etodo nuevo
     puesto en \textit{protocol}.
+           
+  \subsection{An\'alisis}
+    Previamente a la experimentación nos detuvimos a analizar la fórmula que
+    determina el RTO en una retransimisión dada (Ver sección métodos).
+
+    $\alpha$ es utilizada para ponderar el valor de los RTT's anteriores con
+    el último recibido. De la ecuación para calcular el SRTT podemos deducir
+    que valores de $\alpha$ peque\~nos hacen que se le asigne mayor peso a
+    las mediciones anteriores, mientras que valores de $\alpha$ mayores
+    establecen una mayor influencia de la última muestra de RTT obtenida. 
+    Ambas opciones tienen ventajas y desventajas: la primera genera un RTT
+    más estable, aunque no es lo suficientemente rápida como para adaptarse
+    a los cambios. La segunda aproximación es buena en este último aspecto,
+    aunque es susceptible a ser afectada en gran medida por fluctuaciones
+    temporales.
+
+    La variable $\beta$ utilizada para actualizar el valor de RTTVAR
+    juega un papel totalmente análogo al de $\alpha$. Valores peque\~nos
+    hacen que se pondere en mayor medida el valor de las variaciones
+    anteriores, mientras que valores altos le asignan mayor importancia al
+    valor de la última diferencia entre la muestra del RTT obtenida y el
+    valor del SRTT.
     
   \subsection{Experimentaci\'on}  
     Para estudiar el comportamiento de PTC realizaremos los siguientes
@@ -52,4 +79,4 @@
     \emph{Valor de RTO variando $\alpha$ y $\beta$}, 
     \emph{Valor de RTO cuando la red se congestiona sin perdida},
     \emph{Cantidad de paquetes perdidos variando $\alpha$ y $\beta$},
-    
+    \emph{Tiempo total de transmisi\'on en entorno con p\'erdidas}.
