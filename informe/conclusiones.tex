@@ -1,0 +1,30 @@
+\section{Conclusiones}
+
+Todos los experimentos demostraron lo susceptible que es la medici\'on de
+RTO a los par\'ametros de la red, as\'i como tambi\'en a los par\'ametros
+utilizados para estimarlo. 
+
+Primero vimos que cambiar los valores de $\alpha$ y $\beta$ modifican
+significativamente el valor estimado de \rto{}, al experimentar con valores
+muy peque\~nos, los cálculos no se adaptan de forma realista a las
+variaciones en los valores de RTT reales. Por el contrario, al tomar
+valores muy altos los mismos se ven demasiado influenciados por
+fluctuaciones temporales, dando como resultado valores demasiado altos o
+demasiado peque\~nos en comparación con el RTT real. 
+
+Luego vimos como los valores de $\alpha$ y $\beta$ modifican la cantidad
+de retransmisiones, cabe destacar que las \textit{Figuras 5 y 6} son parte
+de un experimento en el cual no se simul\'o perdida de paquetes, sin embargo
+, hubo retransmisiones. Esto se debe a que cuando el \rto{} se acerca al 
+\rtt{} estimado es muy sensible a cambios internos de la pc, recordemos que
+los procesos de cliente y servidor est\'an funcionando dentro de un sistema
+operativo hogareño. 
+
+Por \'ultimo, vimos como el c\'alculo del \rto{} afecta a la transmisi\'on
+total de una conexi\'on. Podemos ver que entre el primer resultado hay casi
+dos segundos de diferencia, teniendo en cuenta que el tiempo para enviar un 
+mensaje entre ambos nodos es menor a 0.1 seg, podemos ver que la diferencia
+de performance es notable.
+
+Para concluir queremos agregar que el valor que mejor funcion\'o en los 
+experimentos fue el propuesto por el RFC, consiguiendo aproximarnos con $\alpha=0.15$ y $\beta=0.2$. 

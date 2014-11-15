@@ -1,6 +1,6 @@
-\subsection{Resultados}
+\section{An\'alisis y Resultados}
 
-    \subsubsection{Valor de RTO variando $\alpha$ y $\beta$}
+    \subsection{Valor de RTO variando $\alpha$ y $\beta$}
     
         Primero estudiamos como var\'ia el \rto{} cuando se utilizan los
         valores extremos de $\alpha$ y $\beta$. Se utiliz\'o un valor 
@@ -70,7 +70,7 @@
         \textit{25 ticks} y probabilidad de perdida cero luego de 
         enviar 200 paquetes se pueden ver en la \emph{Figura 4}.
         
-    \subsubsection{Perdida de paquetes variando $\alpha$ y $\beta$}
+    \subsection{Perdida de paquetes variando $\alpha$ y $\beta$}
         Para estudiar la perdida de paquetes se fij\'o el valor de 
         de \rto{} en \textit{25 ticks} y no se simularon p\'erdidas.
         Sin embargo en varios casos hubo retransmisiones, la 
@@ -97,7 +97,7 @@
     \end{figure}    
 
 
-    \subsubsection{Valor de RTO cuando la red se congestiona sin perdida}
+    \subsection{Valor de RTO cuando la red se congestiona sin perdida}
         Para este configuramos el cliente para que env\'ie 300 paquetes al
         servidor, pero luego de enviarse 150 paquetes, el delay de la red
         se duplicara o cuadruplicara. 
@@ -142,19 +142,18 @@
         el delay no se logr\'o volver a un \rto{} cercano a el \rtt{} real.
 
 
-    \subsubsection{Tiempo total de transmisi\'on en entorno con p\'erdidas}
+    \subsection{Tiempo total de transmisi\'on en entorno con p\'erdidas}
         
         Para este experimento se configur\'o un escenario en el cual el 
         cliente env\'ia 300 mensajes al servidor, pasados los 150 el delay
         se incrementa de \textit{25 ticks} a \textit{50 ticks}. A su vez,
         la probabilidad de perder un paquete es de 0.1.
+        Luego, utilizando wireshark, se calcul\'o el tiempo que dur\'o la
+        conexi\'on en base a los paquetes capturados y su timestamp.
         
         Para los valores de $\alpha=0$ y $\beta=0$ el tiempo fue 42,19 seg,
         para los valores propuestos por el RFC el tiempo promedio fue
         41,67 seg, para $\alpha=0.15$ y $\beta=0.2$ 42,39 seg, finalmente  
         para $\alpha=1$ y $\beta=1$ el tiempo fue 44,34 seg.
         
-        Podemos ver que entre el primer resultado hay casi dos segundos 
-        de diferencia, teniendo en cuenta que el tiempo para enviar un 
-        mensaje entre ambos nodos es menor a 0.1 seg, podemos ver que la 
-        diferencia de performance es notable.
+
