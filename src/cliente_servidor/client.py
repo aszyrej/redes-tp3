@@ -157,7 +157,7 @@ def perdidos_vs_alpha_vs_beta():
     pylab.clf()
 
 class congestion_subida:
-    def __init__(self, alpha=0, beta=0, delay_inicial=25, proba=0, delay_final=50, verbose=True, size_burst=150):
+    def __init__(self, alpha=0, beta=0, delay_inicial=25, proba=0, delay_final=50, verbose=True, size_burst=150, output = 'congestion.pdf', ylim = None):
         self.rtos = []
         self.rtts = []
 
@@ -168,6 +168,8 @@ class congestion_subida:
         self.delay_final = delay_final
         self.verbose = verbose
         self.size_burst = size_burst
+        self.output = output
+        self.ylim = ylim
 
     def burst(self, times=150):
         for i in xrange(times):
@@ -187,7 +189,7 @@ class congestion_subida:
             self.client_sock.connect((SERVER_IP, SERVER_PORT), timeout=5)
 
             if self.verbose:
-                print('Calculando todo con delay = {}'.format(self.delay_inicial))
+                print('\nCalculando todo con delay = {}'.format(self.delay_inicial))
             self.burst(times = self.size_burst)
             self.client_sock.alumnos_print_rto()
 
@@ -198,19 +200,24 @@ class congestion_subida:
                 
             #El ultimo mensaje tiene que llegar si o si
             self.client_sock.send(end)
+            time.sleep(1)
 
-    def write_report(self, output='congestion.pdf'):
+            self.write_report()
+
+    def write_report(self):
         paquetes = [5 * i for i in xrange(0, len(self.rtts))]
         pylab.plot(paquetes, self.rtos)
         pylab.plot(paquetes, self.rtts)   
 
-        pylab.xlabel('Cantidad Paquetes Enviados ($\\frac{{d_i}}{{d_f}} = {}$)'.format(self.delay_inicial * 1. / self.delay_final))
+        if self.ylim:
+            pylab.gca().set_ylim([0, self.ylim])
 
+        pylab.xlabel('Cantidad Paquetes Enviados ($\\frac{{d_i}}{{d_f}} = {}$)'.format(self.delay_inicial * 1. / self.delay_final))
         pylab.ylabel('RTO (ticks)')
         pylab.title ('RTO vs Numero de Paquetes')
         pylab.legend(['rto','rtt'])
         pylab.tight_layout()
-        pylab.savefig(output, format='pdf', orientation='landscape')
+        pylab.savefig(self.output, format='pdf', orientation='landscape')
         pylab.clf()
 
 def main():
@@ -220,13 +227,15 @@ def main():
 
 
     parser = argparse.ArgumentParser(description='Hacer algunos experimentos.')
-    parser.add_argument('alpha', type=float, nargs='?', default=1./2)
-    parser.add_argument('beta', type=float, nargs='?', default=1./4)
-    parser.add_argument('size_burst', type=int, nargs='?', default=200)
-    parser.add_argument('delay_prop', type=float, nargs='?', default=2)
+    parser.add_argument('--alpha', type=float, nargs='?', default=1./2)
+    parser.add_argument('--beta', type=float, nargs='?', default=1./4)
+    parser.add_argument('--size_burst', type=int, nargs='?', default=200)
+    parser.add_argument('--delay_prop', type=float, nargs='?', default=2)
+    parser.add_argument('--output', type=str, nargs='?', default='congestion.pdf')
+    parser.add_argument('--ylim', type=int, nargs='?')
     args = parser.parse_args()
 
-    congestion_subida(alpha = args.alpha, beta = args.beta, size_burst = args.size_burst, delay_inicial = 25, delay_final = 25 * args.delay_prop).run()
+    congestion_subida(output = args.output, ylim = args.ylim, alpha = args.alpha, beta = args.beta, size_burst = args.size_burst, delay_inicial = 25, delay_final = 25 * args.delay_prop).run()
 
 if __name__ == "__main__":
     main()
