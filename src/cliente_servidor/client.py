@@ -160,8 +160,8 @@ class congestion_subida:
         self.rtos = []
         self.rtts = []
 
-    def burst(self, times = 150):
-        for i in xrange(150):
+    def burst(self, times=150):
+        for i in xrange(times):
             self.client_sock.send(to_send)
 
             if i%5 == 0:
@@ -172,24 +172,27 @@ class congestion_subida:
                 self.rtos += [rto]
                 self.rtts += [rtt]
 
-    def run(self, alpha = 0, beta = 0, delay = 25, proba = .05, delay_final = 50, verbose=False):
+    def run(self, alpha=0, beta=0, delay_inicial=25, proba=.05, delay_final=50, verbose=True, size_burst=150):
         print "Calculando parametros con congestion"
-        with Socket(alpha, beta, proba, delay, verbose) as self.client_sock:
+        with Socket(alpha, beta, proba, delay_inicial, verbose) as self.client_sock:
             self.client_sock.connect((SERVER_IP, SERVER_PORT), timeout=5)
 
-            self.burst()
-            self.client_sock.alumnos_print_rto()       
+            if verbose:
+                print('Calculando todo con delay = {}'.format(delay_inicial))
+            self.burst(times = size_burst)
+            self.client_sock.alumnos_print_rto()
                     
-            print "Haciendo delay"
+            if verbose:
+                print('\nCalculando todo con delay = {}'.format(delay_final))
             self.client_sock.alumnos_change_delay(delay_final)
-            self.burst()
+            self.burst(times = size_burst)
                 
             #El ultimo mensaje tiene que llegar si o si
             self.client_sock.send(end)
             self.write_report()
 
     def write_report(self, output='congestion.pdf'):
-        paquetes = [i*5 for i in xrange(60)]
+        paquetes = [5 * i for i in xrange(0, len(self.rtts))]
         pylab.plot(paquetes, self.rtos)
         pylab.plot(paquetes, self.rtts)   
 
@@ -205,7 +208,7 @@ def main():
 #   n_vs_rto()
 #   rto_vs_alpha_vs_beta()
 #   perdidos_vs_alpha_vs_beta()
-   congestion_subida().run()
+   congestion_subida().run(size_burst = 200)
 
 if __name__ == "__main__":
     main()
