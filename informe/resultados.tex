@@ -42,12 +42,12 @@
 	    \center
 	    \begin{subfigure}{0.48\textwidth}
 		    \includegraphics[width=1.0\textwidth]{imagenes/test_0_0.jpg}
-		    \caption{Figura 1}
+		    \caption*{Figura 1}
 	    \end{subfigure}
 	    ~
 	    \begin{subfigure}{0.48\textwidth}
 		    \includegraphics[width=1.0\textwidth]{imagenes/test_1_1.jpg}
-		    \caption{Figura 2}
+		    \caption*{Figura 2}
 	    \end{subfigure}
 	    \end{figure}    
 
@@ -55,12 +55,12 @@
 	    \center
 	    \begin{subfigure}{0.48\textwidth}
 		    \includegraphics[width=1.0\textwidth]{imagenes/test_5_5.jpg}
-		    \caption{Figura 3}
+		    \caption*{Figura 3}
 	    \end{subfigure}
 	    ~
 	    \begin{subfigure}{0.48\textwidth}
 		    \includegraphics[width=1.0\textwidth]{imagenes/test_a_b.jpg}
-		    \caption{Figura 4}
+		    \caption*{Figura 4}
 	    \end{subfigure}
 	    \end{figure}    
 	       
@@ -81,25 +81,26 @@
 	    \center
 	    \begin{subfigure}{0.32\textwidth}
 		    \includegraphics[width=1.0\textwidth]{imagenes/rto_vs_alphaBeta.pdf}
-		    \caption{Figura 4}
+		    \caption*{Figura 4}
 	    \end{subfigure}
 	    ~
 	    \begin{subfigure}{0.32\textwidth}
 		    \includegraphics[width=1.0\textwidth]{imagenes/retransmisiones_150.pdf}
-		    \caption{Figura 5}
+		    \caption*{Figura 5}
 	    \end{subfigure}
 	    ~
 	    \begin{subfigure}{0.32\textwidth}
 		    \includegraphics[width=1.0\textwidth]{imagenes/retransmisiones_300.pdf}
-		    \caption{Figura 6}
+		    \caption*{Figura 6}
 	    \end{subfigure}
 	
     \end{figure}    
 
 
+	\newpage
     \subsection{Valor de RTO cuando la red se congestiona sin perdida}
-        Para este configuramos el cliente para que env\'ie 300 paquetes al
-        servidor, pero luego de enviarse 150 paquetes, el delay de la red
+        Para este configuramos el cliente para que env\'ie 600 paquetes al
+        servidor, pero luego de enviarse 300 paquetes, el delay de la red
         se duplicara o cuadruplicara. 
         
         El \emph{Escenario 1} muestra el resultado en una red con
@@ -110,13 +111,29 @@
         \begin{figure}[H]
             \center
 	        
-		    \includegraphics[width=0.32\textwidth]{imagenes/rtt_vs_n_2_4.pdf}
-		    \includegraphics[width=0.32\textwidth]{imagenes/congestion_50_2_4.pdf}
-		    \includegraphics[width=0.32\textwidth]{imagenes/congestion_100_2_4.pdf}
+		    \includegraphics[width=0.32\textwidth]{imagenes/congestion_1.pdf}
+		    \includegraphics[width=0.32\textwidth]{imagenes/congestion_2.pdf}
+		    \includegraphics[width=0.32\textwidth]{imagenes/congestion_4.pdf}
 
-            \caption{Escenario 1}
+            \caption*{Escenario 1}
 	
         \end{figure}          
+
+		Como se puede ver, mientras en el primer caso con delay constante el RTO
+		sube cuando hay un timeout, pero este mismo baja r\'apidamente y vuelve
+		a un valor cercano al RTT bastante r\'apido.
+
+		Cuando el timeout se duplica, el RTO tiene picos cuando hay un timeout,
+		que son cada vez m\'as grandes y m\'as seguidos, pero al bajar nunca
+		llega al RTT original. Esto se debe a que el cliente detecta que hay
+		tanta ``congesti\'on'' que el protocolo intenta bajarla subiendo el
+		tiempo hasta la pr\'oxima transmisi\'on, pero como esta nunca baja esta
+		no se acreca tanto al RTT como en el primer caso.
+
+		En el tercer caso, cuando el timeout se cuatriplica, la ``congesti\'on''
+		parece ser tan grande que el RTO en el protocolo deja de tener un valor
+		previsible ya que nunca llegan a un nivel estable con la cantidad de
+		paquetes mandados.
   
         El \emph{Escenario 2} muestra el resultado en una red con
         par\'aemtros: $\alpha={{1}\over{8}}$, $\beta={{1}\over{2}}$ 
@@ -126,21 +143,50 @@
         \begin{figure}[H]
             \center
 	        
-		    \includegraphics[width=0.32\textwidth]{imagenes/rtt_vs_n_8_2.pdf}
-		    \includegraphics[width=0.32\textwidth]{imagenes/congestion_50_8_2.pdf}
-		    \includegraphics[width=0.32\textwidth]{imagenes/congestion_100_8_2.pdf}
+		    \includegraphics[width=0.32\textwidth]{imagenes/congestionb_1.pdf}
+		    \includegraphics[width=0.32\textwidth]{imagenes/congestionb_2.pdf}
+		    \includegraphics[width=0.32\textwidth]{imagenes/congestionb_4.pdf}
 
-            \caption{Escenario 1}
+            \caption*{Escenario 2}
 	
         \end{figure}          
 
-        En ambos casos sucedi\'o que al duplicar el valor del delay el 
-        mensaje n\'umero 101 debi\'o ser retransmitido. A su vez, cuando 
-        se cuadruplic\'o el valor de la red, el mensaje n\'umero 101 debi\'o
-        ser retransmitido dos veces. 
-        Tambi\'en se puede notar que en ambos casos luego de cuadruplicarse
-        el delay no se logr\'o volver a un \rto{} cercano a el \rtt{} real.
+		En este caso sucede algo similar al caso del \emph{Escenario 1},
+		sugiriendo que este resultado no depende en gran medida de los
+		parametros $\alpha$ y $\beta$.
 
+		\hspace{1em}
+
+		Por \'ultimo, se intenta hacer un escenario largo donde el delay se
+		duplica y se hace la mitad cada 300 paquetes, simulando una red donde
+		el nivel de congesti\'on cambia bastante seguido. Esto se est\'a
+		haciendo en una red con $\alpha = {{1}\over{2}}$ y $\beta =
+		{{1}\over{4}}$.
+
+		En este primer gr\'afico, tomamos sesiones con grupos de 500 paquetes,
+		donde el delay de cada grupo es el doble o la mitad de el del grupo
+		anterior.
+
+		\begin{figure}[H]
+			\includegraphics[width=\textwidth]{imagenes/congestion_long.pdf}
+            \caption*{Escenario 3: grupos de 500 paquetes con delay 25, 50, 25, \ldots}
+		\end{figure}
+
+
+		Como podemos ver, el RTO promedio sube y tiene picos m\'as alejados del
+		RTT cuando hay tanta congesti\'on que el delay se duplica, pero puede
+		volver a la normalidad r\'apidamente cuando la congesti\'on para. Por
+		otro lado, como podemos ver en la pr\'oxima figura, donde los grupos son
+		de 100 paquetes
+
+		\begin{figure}[H]
+			\includegraphics[width=\textwidth]{imagenes/congestion_short.pdf}
+			\caption*{Escenario 4: grupos de 100 paquetes con delay 25, 50, 25, \ldots}
+		\end{figure}
+
+		Si los problemas de congesti\'on cambian cada menos paquetes, puede ser
+		que el RTO no tenga tiempo para recuperrase y volver a valores m\'as
+		cercanos al RTT.
 
     \subsection{Tiempo total de transmisi\'on en entorno con p\'erdidas}
         
