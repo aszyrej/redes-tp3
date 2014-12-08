@@ -212,9 +212,9 @@ class congestion_subida:
         if self.ylim:
             pylab.gca().set_ylim([0, self.ylim])
 
-        pylab.xlabel('Cantidad Paquetes Enviados ($\\frac{{d_i}}{{d_f}} = {}$)'.format(self.delay_inicial * 1. / self.delay_final))
+        pylab.xlabel('Cantidad Paquetes Enviados')
         pylab.ylabel('RTO (ticks)')
-        pylab.title ('RTO vs Numero de Paquetes')
+        pylab.title ('RTO vs Numero de Paquetes ($^{{d_0}}/_{{d_f}} = {}$)'.format(self.delay_inicial * 1. / self.delay_final))
         pylab.legend(['rto','rtt'])
         pylab.tight_layout()
         pylab.savefig(self.output, format='pdf', orientation='landscape')
