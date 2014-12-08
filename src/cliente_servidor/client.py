@@ -9,6 +9,7 @@ except:
 
 import time
 import pylab
+import argparse
 
 
 SERVER_IP = '127.0.0.1'
@@ -156,9 +157,17 @@ def perdidos_vs_alpha_vs_beta():
     pylab.clf()
 
 class congestion_subida:
-    def __init__(self):
+    def __init__(self, alpha=0, beta=0, delay_inicial=25, proba=0, delay_final=50, verbose=True, size_burst=150):
         self.rtos = []
         self.rtts = []
+
+        self.alpha = alpha
+        self.beta = beta
+        self.delay_inicial = delay_inicial
+        self.proba = proba
+        self.delay_final = delay_final
+        self.verbose = verbose
+        self.size_burst = size_burst
 
     def burst(self, times=150):
         for i in xrange(times):
@@ -172,31 +181,31 @@ class congestion_subida:
                 self.rtos += [rto]
                 self.rtts += [rtt]
 
-    def run(self, alpha=0, beta=0, delay_inicial=25, proba=.05, delay_final=50, verbose=True, size_burst=150):
+    def run(self):
         print "Calculando parametros con congestion"
-        with Socket(alpha, beta, proba, delay_inicial, verbose) as self.client_sock:
+        with Socket(self.alpha, self.beta, self.proba, self.delay_inicial, self.verbose) as self.client_sock:
             self.client_sock.connect((SERVER_IP, SERVER_PORT), timeout=5)
 
-            if verbose:
-                print('Calculando todo con delay = {}'.format(delay_inicial))
-            self.burst(times = size_burst)
+            if self.verbose:
+                print('Calculando todo con delay = {}'.format(self.delay_inicial))
+            self.burst(times = self.size_burst)
             self.client_sock.alumnos_print_rto()
-                    
-            if verbose:
-                print('\nCalculando todo con delay = {}'.format(delay_final))
-            self.client_sock.alumnos_change_delay(delay_final)
-            self.burst(times = size_burst)
+
+            if self.verbose:
+                print('\nCalculando todo con delay = {}'.format(self.delay_final))
+            self.client_sock.alumnos_change_delay(self.delay_final)
+            self.burst(times = self.size_burst)
                 
             #El ultimo mensaje tiene que llegar si o si
             self.client_sock.send(end)
-            self.write_report()
 
     def write_report(self, output='congestion.pdf'):
         paquetes = [5 * i for i in xrange(0, len(self.rtts))]
         pylab.plot(paquetes, self.rtos)
         pylab.plot(paquetes, self.rtts)   
 
-        pylab.xlabel('Cantidad Paquetes Enviados')
+        pylab.xlabel('Cantidad Paquetes Enviados ($\\frac{{d_i}}{{d_f}} = {}$)'.format(self.delay_inicial * 1. / self.delay_final))
+
         pylab.ylabel('RTO (ticks)')
         pylab.title ('RTO vs Numero de Paquetes')
         pylab.legend(['rto','rtt'])
@@ -208,7 +217,16 @@ def main():
 #   n_vs_rto()
 #   rto_vs_alpha_vs_beta()
 #   perdidos_vs_alpha_vs_beta()
-   congestion_subida().run(size_burst = 200)
+
+
+    parser = argparse.ArgumentParser(description='Hacer algunos experimentos.')
+    parser.add_argument('alpha', type=float, nargs='?', default=1./2)
+    parser.add_argument('beta', type=float, nargs='?', default=1./4)
+    parser.add_argument('size_burst', type=int, nargs='?', default=200)
+    parser.add_argument('delay_prop', type=float, nargs='?', default=2)
+    args = parser.parse_args()
+
+    congestion_subida(alpha = args.alpha, beta = args.beta, size_burst = args.size_burst, delay_inicial = 25, delay_final = 25 * args.delay_prop).run()
 
 if __name__ == "__main__":
     main()

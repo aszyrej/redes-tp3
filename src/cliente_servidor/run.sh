@@ -8,4 +8,4 @@ if [ `id -u` != 0 ] ; then
 fi
 
 sudo $ipython server.py 1> /dev/null &
-sudo $ipython client.py 
+sudo $ipython client.py $@
