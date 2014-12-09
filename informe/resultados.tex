@@ -1,13 +1,13 @@
 \section{An\'alisis y Resultados}
 
     \subsection{Valor de RTO variando $\alpha$ y $\beta$}
-    
+
         Primero estudiamos como var\'ia el \rto{} cuando se utilizan los
-        valores extremos de $\alpha$ y $\beta$. Se utiliz\'o un valor 
+        valores extremos de $\alpha$ y $\beta$. Se utiliz\'o un valor
         de delay = \textit{6 ticks} sin probabilidad de p\'erdida.
 
-        Puede verse en la \textit{Figura 1}, que tomando $\alpha=0$, 
-        $\beta=0$ los cálculos ignoran por completo los nuevos 
+        Puede verse en la \textit{Figura 1}, que tomando $\alpha=0$,
+        $\beta=0$ los cálculos ignoran por completo los nuevos
         valores de RTT y consideran únicamente los valores de SRTT
         anteriores. En este caso, el valor constante inicial.
 
@@ -18,23 +18,23 @@
         resultado es un gráfico en donde el RTO coincide exactamente con
         el SRTT, y ambos responden excesivamente a cualquier fluctuación
         que se produzca en el valor del RTT.
-    
-        Por otra parte, la \textit{Figura 3} muestra lo que sucede al 
+
+        Por otra parte, la \textit{Figura 3} muestra lo que sucede al
         ponderar de igual manera los valores anteriores con los nuevos, al
         tomar ambas variables con valor 0.5. Esto debería generar valores
         cercanos a los de las muestras anteriores, pero que sean capaces
         de responder a cambios significativos y permanentes del valor de
         RTT. En otras palabras, que alcancen un equilibrio entre ambas
-        propuestas. Sin embargo, el comportamiento no fue el esperado. 
-        
+        propuestas. Sin embargo, el comportamiento no fue el esperado.
+
         El resultado es una serie de cálculos demasiado sensibles a las
         fluctuaciones temporales que responden excesivamente a estos
         cambios. Por ello hicimos una \'ultima prueba (\textit{Figura 4})
-        donde fijamos el valor de $\alpha$ en 0.15 y $\beta$ en 0.20 
+        donde fijamos el valor de $\alpha$ en 0.15 y $\beta$ en 0.20
         (cercanos al propuesto por el RFC 6298).
         Las conexiones en las distintas redes por lo general permanecen
         estables la mayor parte del tiempo, por lo que los cambios bruscos
-        de \rtt{} son poco probables. Por otro lado el valor de $\beta$ 
+        de \rtt{} son poco probables. Por otro lado el valor de $\beta$
         permite agregar un poco de sensibilidad a los cambios en el valor
         de los \textit{rtts}.
 
@@ -49,7 +49,7 @@
 		    \includegraphics[width=1.0\textwidth]{imagenes/test_1_1.jpg}
 		    \caption*{Figura 2}
 	    \end{subfigure}
-	    \end{figure}    
+	    \end{figure}
 
         \begin{figure}[H]
 	    \center
@@ -62,16 +62,16 @@
 		    \includegraphics[width=1.0\textwidth]{imagenes/test_a_b.jpg}
 		    \caption*{Figura 4}
 	    \end{subfigure}
-	    \end{figure}    
-	       
-        Finalmente intentamos medir muchos valores de \rto{} para 
-        diversas convinaciones de $\alpha$ y $\beta$. 
-        Los resultados de medir el \rto{} para un valor fijo de 
-        \textit{25 ticks} y probabilidad de perdida cero luego de 
+	    \end{figure}
+
+        Finalmente intentamos medir muchos valores de \rto{} para
+        diversas convinaciones de $\alpha$ y $\beta$.
+        Los resultados de medir el \rto{} para un valor fijo de
+        \textit{25 ticks} y probabilidad de perdida cero luego de
         enviar 200 paquetes se pueden ver en la \emph{Figura 4}.
-        
+
     \subsection{Perdida de paquetes variando $\alpha$ y $\beta$}
-        Para estudiar la perdida de paquetes se fij\'o el valor de 
+        Para estudiar la perdida de paquetes se fij\'o el valor de
         de \rto{} en \textit{25 ticks} y no se simularon p\'erdidas.
         Sin embargo en varios casos hubo retransmisiones, la 
         \textit{Figura 5} muestra la cantidad que hubo durante el env\'io de 300
@@ -87,7 +87,6 @@
 		    \includegraphics[width=1.0\textwidth]{imagenes/retransmisiones_300.pdf}
 		    \caption*{Figura 5}
 	    \end{subfigure}
-	
     \end{figure}
 
 	Seg\'un una interpretaci\'on de estos heatmaps dice que $\alpha$ y $\beta$
@@ -105,23 +104,23 @@
     \subsection{Valor de RTO cuando la red se congestiona sin perdida}
         Para este configuramos el cliente para que env\'ie 600 paquetes al
         servidor, pero luego de enviarse 300 paquetes, el delay de la red
-        se duplicara o cuadruplicara. 
-        
+        se duplicara o cuadruplicara.
+
         El \emph{Escenario 1} muestra el resultado en una red con
         par\'aemtros: $\alpha={{1}\over{2}}$, $\beta={{1}\over{4}}$
         cuando no se congestiona, cuando la congesti\'on causa el doble de
-        delay, y cuando causa el cuadruple.
-  
+        delay, y cuando causa el cu\'adruple.
+
         \begin{figure}[H]
             \center
-	        
+
 		    \includegraphics[width=0.32\textwidth]{imagenes/congestion_1.pdf}
 		    \includegraphics[width=0.32\textwidth]{imagenes/congestion_2.pdf}
 		    \includegraphics[width=0.32\textwidth]{imagenes/congestion_4.pdf}
 
             \caption*{Escenario 1}
-	
-        \end{figure}          
+
+        \end{figure}
 
 		Como se puede ver, mientras en el primer caso con delay constante el RTO
 		sube cuando hay un timeout, pero este mismo baja r\'apidamente y vuelve
@@ -132,28 +131,28 @@
 		llega al RTT original. Esto se debe a que el cliente detecta que hay
 		tanta ``congesti\'on'' que el protocolo intenta bajarla subiendo el
 		tiempo hasta la pr\'oxima transmisi\'on, pero como esta nunca baja esta
-		no se acreca tanto al RTT como en el primer caso.
+		no se acerca tanto al RTT como en el primer caso.
 
-		En el tercer caso, cuando el timeout se cuatriplica, la ``congesti\'on''
+		En el tercer caso, cuando el timeout se cuadruplica, la ``congesti\'on''
 		parece ser tan grande que el RTO en el protocolo deja de tener un valor
 		previsible ya que nunca llegan a un nivel estable con la cantidad de
 		paquetes mandados.
-  
+
         El \emph{Escenario 2} muestra el resultado en una red con
-        par\'aemtros: $\alpha={{1}\over{8}}$, $\beta={{1}\over{2}}$ 
+        par\'aemtros: $\alpha={{1}\over{8}}$, $\beta={{1}\over{2}}$
         cuando no se congestiona, cuando la congesti\'on causa el doble de
-        delay, y cuando causa el cuadruple.
+        delay, y cuando causa el cu\'adruple.
 
         \begin{figure}[H]
             \center
-	        
+
 		    \includegraphics[width=0.32\textwidth]{imagenes/congestionb_1.pdf}
 		    \includegraphics[width=0.32\textwidth]{imagenes/congestionb_2.pdf}
 		    \includegraphics[width=0.32\textwidth]{imagenes/congestionb_4.pdf}
 
             \caption*{Escenario 2}
-	
-        \end{figure}          
+
+        \end{figure}
 
 		En este caso sucede algo similar al caso del \emph{Escenario 1},
 		sugiriendo que este resultado no depende en gran medida de los
@@ -193,17 +192,17 @@
 		cercanos al RTT.
 
     \subsection{Tiempo total de transmisi\'on en entorno con p\'erdidas}
-        
-        Para este experimento se configur\'o un escenario en el cual el 
+
+        Para este experimento se configur\'o un escenario en el cual el
         cliente env\'ia 300 mensajes al servidor, pasados los 150 el delay
         se incrementa de \textit{25 ticks} a \textit{50 ticks}. A su vez,
         la probabilidad de perder un paquete es de 0.1.
         Luego, utilizando wireshark, se calcul\'o el tiempo que dur\'o la
         conexi\'on en base a los paquetes capturados y su timestamp.
-        
+
         Para los valores de $\alpha=0$ y $\beta=0$ el tiempo fue 42,19 seg,
         para los valores propuestos por el RFC el tiempo promedio fue
-        41,67 seg, para $\alpha=0.15$ y $\beta=0.2$ 42,39 seg, finalmente  
+        41,67 seg, para $\alpha=0.15$ y $\beta=0.2$ 42,39 seg, finalmente
         para $\alpha=1$ y $\beta=1$ el tiempo fue 44,34 seg.
-        
+
 
