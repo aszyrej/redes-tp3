@@ -2,15 +2,18 @@
 
 try:
     from ptc import Socket, SHUT_WR
+    from ptc.exceptions import PTCError
 except:
     import sys
     sys.path.append('../catedra/')
     from ptc import Socket, SHUT_WR
+    from ptc.exceptions import PTCError
+
+
 
 import time
 import pylab
 import argparse
-
 
 SERVER_IP = '127.0.0.1'
 SERVER_PORT = 6677
@@ -28,7 +31,16 @@ def conectar_server(cliente, n):
         client_sock.connect((SERVER_IP, SERVER_PORT), timeout=5)
     
         for i in xrange(n):
-            client_sock.send(to_send)
+            done = False
+            while not done:
+                try:
+                    client_sock.send(to_send)
+                    done = True
+                except PTCError:
+                    # The server was disconnected.
+                    # Wait for the user to reset it.
+                    import ipdb
+                    ipdb.set_trace()
 
         time.sleep(1)
 
@@ -122,39 +134,54 @@ def rto_vs_alpha_vs_beta():
     pylab.savefig('colormap', format='pdf', orientation='landscape')
     pylab.clf()
 
-def perdidos_vs_alpha_vs_beta(): 
-    print "ALPHA, BETA VS RTO"
+class perdidos_vs_alpha_vs_beta:
+    def __init__(self, paquetes=300, times=1, verbose=True, output='ret_colormap.pdf'):
+        self.verbose = verbose
+        self.output = output
+        self.paquetes = paquetes
+        self.times = times
 
-    arr_alpha = pylab.arange(0., 1.2, 0.2)
-    arr_betas = pylab.arange(0., 1.2, 0.2)
-    n = 300
-    lalpha = len(arr_alpha)
-    lbetas = len(arr_betas)
-    resus = [ [0. for i in xrange(lalpha)] for j in xrange(lbetas)]
+    def run(self): 
+        if self.verbose:
+            print "ALPHA, BETA VS RTO"
 
-    for i in xrange(lalpha):
-        for j in xrange(lbetas):
+        self.arr_alpha = [x * 0.2 for x in range(0, 6)]
+        self.arr_beta = [x * 0.2 for x in range (0, 6)]
+        lalpha = len(self.arr_alpha)
+        lbetas = len(self.arr_beta)
+        self.resus = [ [0. for i in xrange(lalpha)] for j in xrange(lbetas)]
+
+        for i in xrange(lalpha):
+            for j in xrange(lbetas):
+            
+                a = self.arr_alpha[i]
+                b = self.arr_beta[j]
+                cliente = {'alpha':a, 'beta':b, 'proba':0.0, 'delay':25.0}
+
+                cantidades = []
+                for i in xrange(self.times):
+                    _, _, cant = conectar_server(cliente, self.paquetes)
+                    cantidades += [cant]
         
-            a = arr_alpha[i]
-            b = arr_betas[j]
-            cliente = {'alpha':a, 'beta':b, 'proba':0.0, 'delay':25.0}
-            _, _, cant = conectar_server(cliente, n)
-    
-            print cant
-            resus[lalpha-1-i][j] = cant
+                cant = cantidades[int(self.times) / 2]
+                if self.verbose:
+                    print('alpha = {}, beta = {}: {}'.format(a, b, cant))
 
-    #color_plot(resus)
-    arr_betas_r = [b for b in reversed(arr_betas)]
-    pylab.xticks(xrange(lalpha), arr_alpha)
-    pylab.yticks(xrange(lbetas), arr_betas_r)
-    pylab.imshow(resus, interpolation='nearest')
-    pylab.colorbar()
-    pylab.xlabel(r'$\beta$')
-    pylab.ylabel(r'$\alpha$')
-    pylab.title (r'Retransmisiones para $\alpha$ y $\beta$')
-    pylab.tight_layout()
-    pylab.savefig('ret_colormap', format='pdf', orientation='landscape')
-    pylab.clf()
+                self.resus[lalpha-1-i][j] = cant
+
+        self.write_report()
+
+    def write_report(self):
+        pylab.xticks(xrange(len(self.arr_alpha)), self.arr_alpha)
+        pylab.yticks(xrange(len(self.arr_beta)), [x for x in reversed(self.arr_beta)])
+        pylab.imshow(self.resus, interpolation='nearest')
+        pylab.colorbar()
+        pylab.xlabel(r'$\beta$')
+        pylab.ylabel(r'$\alpha$')
+        pylab.title (r'Retransmisiones para $\alpha$ y $\beta$')
+        pylab.tight_layout()
+        pylab.savefig(self.output, format='pdf', orientation='landscape')
+        pylab.clf()
 
 class congestion_subida:
     def __init__(self, alpha=0, beta=0, delay_inicial=25, proba=0, delay_final=50, verbose=True, size_burst=150, output = 'congestion.pdf', ylim = None, delays = None):
@@ -237,12 +264,26 @@ def main():
     parser.add_argument('--beta', type=float, nargs='?', default=1./4)
     parser.add_argument('--size_burst', type=int, nargs='?', default=200)
     parser.add_argument('--delay_prop', type=float, nargs='?', default=2)
-    parser.add_argument('--output', type=str, nargs='?', default='congestion.pdf')
+    parser.add_argument('--output', type=str, nargs='?')
     parser.add_argument('--ylim', type=int, nargs='?')
-    parser.add_argument('delays', type=int, nargs='*')
+    parser.add_argument('--delays', type=int, nargs='*')
+    parser.add_argument('--paquetes', type=int, nargs='?')
+    parser.add_argument('program', type=str, nargs=1)
     args = parser.parse_args()
 
-    congestion_subida(output = args.output, ylim = args.ylim, alpha = args.alpha, beta = args.beta, size_burst = args.size_burst, delay_inicial = 25, delay_final = 25 * args.delay_prop, delays=args.delays).run()
+    if args.program[0] == 'perdidos':
+        if args.output is None:
+            args.output = 'perdidos.pdf'
+
+        perdidos_vs_alpha_vs_beta(paquetes = args.paquetes, output=args.output).run()
+    elif args.program[0] == 'congestion':
+        if args.output is None:
+            args.output = 'congestion.pdf'
+
+        congestion_subida(output = args.output, ylim = args.ylim, alpha = args.alpha, beta = args.beta, size_burst = args.size_burst, delay_inicial = 25, delay_final = 25 * args.delay_prop, delays=args.delays).run()
+    else:
+        print (parser.format_usage())
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()

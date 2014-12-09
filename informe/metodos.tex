@@ -18,4 +18,23 @@
     $\beta={{1}\over{4}}$, $SRTT={RTT_0}$, $RTTVAR={{RTT}\over{2}}$.
     Siendo $RTT_0$ el primer \textit{rtt} calculado.
     
-    
+\subsection{Sistema}
+
+	Tanto el cliente como el servidor est\'an simulados en el mismo sistema. La
+	topolog\'ia de este sistema es similar a la de dos equipos, un cliente y un
+	servidor, conectados mediante un link ethernet en la misma red o en
+	diferentes redes pero con cierto nivel previsible de congesti\'on.
+
+	Al protocolo PTC se le puede artificialmente poner un \emph{delay} ficticio,
+	que simular\'ia tanto la distancia que hay entre en cliente y el serviror en
+	la red simulada como el nivel de congesti\'on entre estos dos puntos.
+	Tambi\'en se tiran adrede los paquetes con una probabilidad $p$, simulando
+	la perdida de paquetes que puede pasar en una red congestionada o con links
+	erroneos.
+
+	Dada la velocidad de procesamiento actual, sumado al procesamiento en
+	paralelo, podemos asumir que el RTT real es el delay ficticio que generamos,
+	dado que un tick simulado ronda el orden del mill\'on de tick reales.
+
+	En lo que respecta a este TP, todas las conexiones son conexiones que usan
+	el protocolo PTC.
