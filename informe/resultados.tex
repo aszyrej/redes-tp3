@@ -74,27 +74,21 @@
         Para estudiar la perdida de paquetes se fij\'o el valor de 
         de \rto{} en \textit{25 ticks} y no se simularon p\'erdidas.
         Sin embargo en varios casos hubo retransmisiones, la 
-        \textit{Figura 5} muestra el resultado para el env\'io de 150
-        paquetes mientras que la \textit{Figura 6} lo muestra para 300.
-        
+        \textit{Figura 5} muestra la cantidad que hubo durante el env\'io de 300
+		paquetes.        
     \begin{figure}[H]
 	    \center
-	    \begin{subfigure}{0.32\textwidth}
+	    \begin{subfigure}{0.45\textwidth}
 		    \includegraphics[width=1.0\textwidth]{imagenes/rto_vs_alphaBeta.pdf}
 		    \caption*{Figura 4}
 	    \end{subfigure}
 	    ~
-	    \begin{subfigure}{0.32\textwidth}
-		    \includegraphics[width=1.0\textwidth]{imagenes/retransmisiones_150.pdf}
+	    \begin{subfigure}{0.45\textwidth}
+		    \includegraphics[width=1.0\textwidth]{imagenes/retransmisiones_300.pdf}
 		    \caption*{Figura 5}
 	    \end{subfigure}
-	    ~
-	    \begin{subfigure}{0.32\textwidth}
-		    \includegraphics[width=1.0\textwidth]{imagenes/retransmisiones_300.pdf}
-		    \caption*{Figura 6}
-	    \end{subfigure}
 	
-    \end{figure}    
+    \end{figure}
 
 	Seg\'un una interpretaci\'on de estos heatmaps dice que $\alpha$ y $\beta$
 	no tienen una relaci\'on directae en el valor de RTO, pero que los valores
@@ -102,10 +96,10 @@
 	cercano a $0.6$, o cuando $\alpha$ es lo m\'as grande posible y $\beta$ lo
 	m\'as chico posible.
 
-	Para mejorar las retransmisiones, seg\'un la \emph{Figura 5}, $\alpha$ o $\beta$ tienen que tener
-	valores no extremos (asirnarle as los dos un valor bajo o un valor alto hace
-	que sean m\'as comunes, [
-
+	Con el segundo, vemos que tampoco hay una relaci\'on directa entre los
+	valores y $\alpha$ o $\beta$ que nos permita hacer una decisi\'on simple
+	sobre el mejor elemento de estos valores. Sin embargo, podemos ver que
+	asignando 1.0 a $\beta$, las retransmisiones siempre son m\'imimas.
 
 	\newpage
     \subsection{Valor de RTO cuando la red se congestiona sin perdida}

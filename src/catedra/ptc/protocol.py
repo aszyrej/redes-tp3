@@ -387,7 +387,7 @@ class PTCProtocol(object):
         self.close_mode = mode
         if self.state != CLOSED:
             self.shutdown(SHUT_RDWR)
-            self.close_event.wait()
+            self.close_event.wait(timeout=10)
         self.free()
         self.join_threads()
             

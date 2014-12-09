@@ -7,5 +7,5 @@ if [ `id -u` != 0 ] ; then
 	exit
 fi
 
-sudo $ipython server.py 1> /dev/null &
+sudo $ipython server.py &
 sudo $ipython client.py -- $@

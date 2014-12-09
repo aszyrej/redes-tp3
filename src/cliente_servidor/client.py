@@ -28,28 +28,38 @@ def conectar_server(cliente, n):
     verbose = True
 
     with Socket(a, b, p, d, verbose) as client_sock:
-        client_sock.connect((SERVER_IP, SERVER_PORT), timeout=5)
+        while not client_sock.is_connected():
+            client_sock.connect((SERVER_IP, SERVER_PORT), timeout=15)
+
+            if not client_sock.is_connected():
+                client_sock.close()
+                client_sock = Socket(a, b, p, d, verbose)
     
         for i in xrange(n):
             done = False
+            if i % 100 == 0:
+                print ("Sending package number {}".format(i))
             while not done:
                 try:
                     client_sock.send(to_send)
+                    # time.sleep(.001)
                     done = True
-                except PTCError:
+                except PTCError as e:
                     # The server was disconnected.
                     # Wait for the user to reset it.
+                    print("The server seems to be down!")
                     import ipdb
                     ipdb.set_trace()
-
-        time.sleep(1)
 
         rto, rtt = client_sock.alumnos_print_rto()
         perdidos = client_sock.alumnos_get_retransmitions()
 
         #El ultimo mensaje tiene que llegar si o si
         client_sock.alumnos_change_proba(0.0)
+
+        time.sleep(1)
         client_sock.send(end)
+        time.sleep(1)
         
     return rto, rtt, perdidos
 
@@ -151,11 +161,8 @@ class perdidos_vs_alpha_vs_beta:
         lbetas = len(self.arr_beta)
         self.resus = [ [0. for i in xrange(lalpha)] for j in xrange(lbetas)]
 
-        for i in xrange(lalpha):
-            for j in xrange(lbetas):
-            
-                a = self.arr_alpha[i]
-                b = self.arr_beta[j]
+        for a in self.arr_alpha:
+            for b in self.arr_beta:
                 cliente = {'alpha':a, 'beta':b, 'proba':0.0, 'delay':25.0}
 
                 cantidades = []
@@ -172,8 +179,8 @@ class perdidos_vs_alpha_vs_beta:
         self.write_report()
 
     def write_report(self):
-        pylab.xticks(xrange(len(self.arr_alpha)), self.arr_alpha)
-        pylab.yticks(xrange(len(self.arr_beta)), [x for x in reversed(self.arr_beta)])
+        pylab.xticks(xrange(len(self.arr_beta)), self.arr_beta)
+        pylab.yticks(xrange(len(self.arr_alpha)), [x for x in reversed(self.arr_alpha)])
         pylab.imshow(self.resus, interpolation='nearest')
         pylab.colorbar()
         pylab.xlabel(r'$\beta$')
