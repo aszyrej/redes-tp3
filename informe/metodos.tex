@@ -1,23 +1,23 @@
 \section{M\'etodos}
-    
+
     El protocolo PTC utiliza un sistema de \textit{acknowledge} para
     saber si un paquete fue recibido. En caso de no recibir un \textit{ack}
     para un  determinado paquete luego de un umbral de tiempo, procede a
     retransmitirlo. Dicho umbral, denominado \textit{rto} se va estimando
-    a medida que se reconocen los paquetes enviados usando las 
-    siguientes funciones: 
-    
+    a medida que se reconocen los paquetes enviados usando las
+    siguientes funciones:
+
         $$RTTVAR = (1-\beta)RTTBAR + \beta |SRTT-RTT|$$
         $$SRTT = (1-\alpha)SRTT + \alpha RTT$$
-        $$RTO = SRTT + max( 1, K * RTTVAR) $$ 
-        
-    Donde $K, \alpha, \beta \in \mathbb{Q}$, $RTT$ es el valor de 
-    \textit{rtt} calculado para el \'ultimo \textit{ack} recibido. 
+        $$RTO = SRTT + max( 1, K * RTTVAR) $$
+
+    Donde $K, \alpha, \beta \in \mathbb{Q}$, $RTT$ es el valor de
+    \textit{rtt} calculado para el \'ultimo \textit{ack} recibido.
     En la implementaci\'on utilizada se inicializan los valores de la
     siguiente manera: $K = 4, \alpha={{1}\over{8}}$,
     $\beta={{1}\over{4}}$, $SRTT={RTT_0}$, $RTTVAR={{RTT}\over{2}}$.
     Siendo $RTT_0$ el primer \textit{rtt} calculado.
-    
+
 \subsection{Sistema}
 
 	Tanto el cliente como el servidor est\'an simulados en el mismo sistema. La
@@ -26,8 +26,13 @@
 	diferentes redes pero con cierto nivel previsible de congesti\'on.
 
 	Al protocolo PTC se le puede artificialmente poner un \emph{delay} ficticio,
-	que simular\'ia tanto la distancia que hay entre en cliente y el serviror en
+	que simular\'ia tanto la distancia que hay entre en cliente y el servidor en
 	la red simulada como el nivel de congesti\'on entre estos dos puntos.
+  Por ejemplo, en los entornos reales (muy distintos al de nuestra experimentaci\'on),
+  el delay incluye el tiempo en el que
+  los paquetes permanecen en los buffers de cada router antes de ser forwardeados,
+  el cual puede ser un factor a tener en cuenta para medir el nivel de congesti\'on
+  de una red.
 	Tambi\'en se tiran adrede los paquetes con una probabilidad $p$, simulando
 	la perdida de paquetes que puede pasar en una red congestionada o con links
 	erroneos.
